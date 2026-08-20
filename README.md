@@ -4,11 +4,11 @@ Panel de gestión interno de Eonesia: centraliza producto, ventas, métricas,
 aprendizaje, finanzas y onboarding para los 4 socios y el equipo. Ver
 `docs/spec.md` para la especificación funcional completa.
 
-**Estado actual:** MVP de la pestaña **Vista global** (6 sectores + páginas de
-tag navegables + notificaciones agregadas). El resto de pestañas
-(Producción, Métricas, Learning, Finanzas, Onboarding) están en el menú de
-navegación con una pantalla de "próximamente" — su contenido se construye en
-la siguiente fase.
+**Estado actual:** las 6 pestañas del MVP están construidas y navegables —
+Vista global, Producción, Métricas, Learning, Finanzas y Onboarding, cada una
+con sus sectores, páginas de tag, notificaciones agregadas y sistema de
+permisos granular por rol. Todos los datos son de ejemplo (empresa ficticia
+"Eonesia", activa desde junio de 2022 — ver `apps/web/src/data/company.ts`).
 
 ## Stack
 
@@ -51,31 +51,64 @@ Copia los `.env.example` y rellena con tus credenciales:
 - `apps/api/.env.example` → `apps/api/.env`
 
 **Sin Supabase configurado, el frontend arranca en modo demo**: la pantalla
-de login muestra un selector de los 4 socios (datos de `apps/web/src/data/socios.ts`)
-para entrar sin backend real — pensado para desarrollar y enseñar el panel
-antes de tener credenciales. En cuanto `VITE_SUPABASE_URL` y
-`VITE_SUPABASE_ANON_KEY` están definidas, el login pasa automáticamente a
-email + contraseña real contra Supabase y el selector de perfiles desaparece
-(no existe impersonación de otros socios fuera del modo demo — sería un
-agujero de seguridad).
+de login muestra un selector de los 6 perfiles de ejemplo (4 socios + 1
+empleada + 1 becario, en `apps/web/src/data/socios.ts`) para entrar sin
+backend real — pensado para desarrollar y enseñar el panel antes de tener
+credenciales, y para poder probar el sistema de permisos con cada rol. En
+cuanto `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` están definidas, el
+login pasa automáticamente a email + contraseña real contra Supabase y el
+selector de perfiles desaparece (no existe impersonación de otros usuarios
+fuera del modo demo — sería un agujero de seguridad).
+
+## Sistema de permisos
+
+Los 4 socios tienen acceso completo siempre. Empleados y becarios ven solo lo
+que un socio les active desde **Permisos** (enlace en el sidebar, visible
+solo para socios → `/panel/admin/permisos`), con granularidad por pestaña y
+por sector dentro de cada pestaña, tal como pide el spec §3. La aplicación
+se refuerza en tres capas: el sidebar oculta lo no permitido, la vista de
+pestaña filtra las tarjetas de sector, y la página de contenido bloquea el
+acceso directo por URL con un estado "Acceso restringido". En esta fase los
+permisos se guardan en `localStorage`; el esquema `tab_permissions` en
+`supabase/schema.sql` ya está listo para cuando se persista en servidor.
 
 ## Qué es real y qué es mock ahora mismo
 
-- **UI, navegación de 3 niveles (pestaña → sector → tag) y notificaciones**:
-  reales y funcionales, con datos de ejemplo (`apps/web/src/data/globalView.ts`).
+- **UI, navegación de 3 niveles (pestaña → sector → tag), notificaciones y
+  permisos por rol**: reales y funcionales, con datos de ejemplo
+  (`apps/web/src/data/*.ts`, uno por pestaña).
 - **Auth**: integración real con Supabase Auth (email/contraseña) lista en el
   código; falta que apuntes el proyecto Supabase real vía variables de entorno
   y que actives el proveedor de email en el dashboard (ver `supabase/README.md`).
-- **Backend Express**: levantado con `/api/health`, `/api/notifications/summary`
-  (mock) y `/api/auth/session` (valida un token de Supabase si está configurado).
-  El frontend **todavía no llama a este backend** — sigue usando su mock local
-  porque los datos de esta fase son de ejemplo por diseño (spec §7). Cuando se
-  conecten fuentes reales (Mail, Banco, Facturación…), esas vistas pasarán a
-  consumir el backend en vez del mock.
-- **Mail, RRSS, Banco, Biblioteca, Facturación, LXP**: sin conectar todavía
-  (requieren credenciales/decisiones que están en "Preguntas abiertas" del
-  spec, sección 9). Las tarjetas de esas fuentes en el panel están preparadas
-  para mostrar el estado "no conectado" hasta que se integren.
+- **Backend Express**: `/api/health`, `/api/notifications/summary` (mock),
+  `/api/auth/session` (valida un token de Supabase si está configurado) y
+  `/api/integrations/*` (ver siguiente sección). El frontend **todavía no
+  llama a este backend para el contenido del panel** — sigue usando su mock
+  local porque los datos de esta fase son de ejemplo por diseño (spec §7).
+- **Biblioteca** (Drive/FTPs/Trello/Miro): los slots de embed funcionan de
+  verdad — pega la URL pública y queda embebida en un iframe dentro del
+  panel, guardada en `localStorage` hasta que haya backend.
+- **RRSS** (Web/LinkedIn/Instagram/Facebook/TikTok): el formulario de entrada
+  manual funciona de verdad (spec §8 — "construir la vista para entrada
+  manual"), guardando cada registro en `localStorage`.
+- **Mail, Banco (open banking), LXP**: sin conectar todavía — cada tag
+  muestra una tarjeta de estado ("pendiente"/"no conectado") con qué falta
+  exactamente para activarlo.
+
+## Conexiones de API — listas para activar
+
+Todo lo que sigue está **preparado en código** pero requiere credenciales
+reales que no existen en este entorno. Variables documentadas en
+`apps/api/.env.example`.
+
+| Integración | Endpoint / mecanismo | Qué falta |
+|---|---|---|
+| Gmail (Mail) | `GET /api/integrations/gmail/oauth/start?account=info` inicia el flujo OAuth real; `GET /api/integrations/gmail/oauth/callback` lo recibe | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` de Google Cloud Console + implementar el intercambio de `code` por tokens (TODO marcado en `apps/api/src/routes/integrations.ts`) y su persistencia en Supabase |
+| RRSS (LinkedIn/Meta/TikTok) | — | Apps aprobadas por cada plataforma (`LINKEDIN_CLIENT_ID`, `META_APP_ID`, `TIKTOK_CLIENT_KEY`…) — mientras tanto, entrada manual funcional |
+| Web (Analytics) | — | Cuenta de GA4 + `GA4_PROPERTY_ID` / service account |
+| Banco | — | Proveedor de Open Banking PSD2 (GoCardless Bank Account Data, Tink…) — `OPEN_BANKING_PROVIDER` / `OPEN_BANKING_API_KEY` |
+| Learning/LXP | — | Decidir modo directo vs. réplica (spec §9) + `LXP_DATABASE_URL` |
+| `GET /api/integrations/status` | ya funciona | Devuelve `{configured: boolean}` por integración, leyendo las variables de entorno anteriores — útil para que el frontend sustituya las tarjetas "no conectado" en cuanto haya credenciales |
 
 ## Seguridad (spec §2)
 
@@ -85,6 +118,8 @@ agujero de seguridad).
 - [x] `.env*` fuera del repo (`.gitignore`), solo se versionan los `.env.example`.
 - [x] RLS diseñada en `supabase/schema.sql` para todas las tablas, con
       Finanzas restringida a socios + permisos explícitos.
+- [x] Permisos granulares por pestaña/sector para Empleado/Becario, con
+      bloqueo de acceso directo por URL además de ocultar la navegación.
 - [ ] HTTPS en Hostinger — depende de la configuración del hosting final.
 - [ ] 2FA — Supabase lo soporta (TOTP); pendiente de activarlo en el proyecto
       real y añadir el flujo en el login cuando se decida.
@@ -107,10 +142,13 @@ Sin resolver todavía, documentadas para no perderlas de vista:
 - Credenciales de API de cada red social (RRSS).
 - Mecanismo exacto de conexión Learning/LXP con AWS (¿leer su Supabase
   directamente o replicar datos aquí?).
-- Diseño final de las combinaciones de permisos para Empleado/Becario más
-  allá del esquema granular ya modelado en `tab_permissions`.
+- Combinaciones concretas de permisos que querréis usar en el día a día —
+  el sistema ya es granular por pestaña/sector, pero los valores por defecto
+  en `apps/web/src/lib/permissions.tsx` (`seedPermissions`) son una propuesta
+  de partida, no una decisión final.
 - Proveedor/librería final para el cliente de correo embebido (Gmail API +
-  OAuth de Google es la vía más directa, ya prevista en el spec).
+  OAuth de Google es la vía más directa, ya prevista y con el flujo OAuth
+  scaffolded en `apps/api/src/routes/integrations.ts`).
 
 ## Diseño
 
