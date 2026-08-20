@@ -10,12 +10,15 @@ import { ManualEntryForm } from "./ManualEntryForm";
 import { IntegrationStatus } from "./IntegrationStatus";
 import { useNotifications } from "../../lib/notifications";
 import { useToast } from "../../lib/toast";
+import { useFavorites } from "../../lib/favorites";
 
 export function TagDetailView({ tabId, sector, tag }: { tabId: string; sector: Sector; tag: Tag }) {
   const navigate = useNavigate();
   const { tagCount, markTagRead } = useNotifications();
   const { showToast } = useToast();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const count = tagCount(tag.id);
+  const favorite = isFavorite(tabId, sector.id, tag.id);
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -40,18 +43,32 @@ export function TagDetailView({ tabId, sector, tag }: { tabId: string; sector: S
             <p className="mt-0.5 max-w-lg text-sm text-ink-soft">{tag.detail.intro}</p>
           </div>
         </div>
-        {count > 0 && (
+        <div className="flex shrink-0 items-center gap-2">
           <button
             onClick={() => {
-              markTagRead(tag.id);
-              showToast(`${tag.label} marcado como leído`);
+              toggleFavorite(tabId, sector.id, tag.id);
+              showToast(favorite ? `${tag.label} quitado de favoritos` : `${tag.label} añadido a favoritos`, "info");
             }}
-            className="btn btn-secondary shrink-0"
+            className="btn btn-secondary !px-2.5"
+            aria-pressed={favorite}
+            aria-label={favorite ? "Quitar de favoritos" : "Añadir a favoritos"}
+            title={favorite ? "Quitar de favoritos" : "Añadir a favoritos"}
           >
-            <Icon name="ti-check" />
-            <span className="hidden sm:inline">Marcar como leído</span>
+            <Icon name={favorite ? "ti-star-filled" : "ti-star"} className={favorite ? "text-warning" : ""} />
           </button>
-        )}
+          {count > 0 && (
+            <button
+              onClick={() => {
+                markTagRead(tag.id);
+                showToast(`${tag.label} marcado como leído`);
+              }}
+              className="btn btn-secondary"
+            >
+              <Icon name="ti-check" />
+              <span className="hidden sm:inline">Marcar como leído</span>
+            </button>
+          )}
+        </div>
       </header>
 
       <div className="flex flex-col gap-6">
