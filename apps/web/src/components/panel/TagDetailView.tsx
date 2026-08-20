@@ -91,6 +91,7 @@ export function TagDetailView({ tabId, sector, tag }: { tabId: string; sector: S
             fields={tag.detail.ledger.fields}
             seedRows={tag.detail.ledger.seedRows}
             addLabel={tag.detail.ledger.addLabel}
+            totalField={tag.detail.ledger.totalField}
           />
         )}
 
