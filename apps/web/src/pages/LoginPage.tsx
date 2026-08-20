@@ -114,7 +114,11 @@ export function LoginPage() {
                   placeholder="tu@eonesia.com"
                 />
               </div>
-              {error && <p className="rounded-lg bg-danger-bg px-3 py-2 text-xs font-medium text-danger">{error}</p>}
+              {error && (
+                <p role="alert" className="rounded-lg bg-danger-bg px-3 py-2 text-xs font-medium text-danger">
+                  {error}
+                </p>
+              )}
               <button type="submit" disabled={loading} className="btn btn-primary w-full">
                 {loading ? "Enviando…" : "Enviar enlace"}
               </button>
@@ -174,7 +178,9 @@ export function LoginPage() {
                 />
               </div>
               {error && (
-                <p className="rounded-lg bg-danger-bg px-3 py-2 text-xs font-medium text-danger">{error}</p>
+                <p role="alert" className="rounded-lg bg-danger-bg px-3 py-2 text-xs font-medium text-danger">
+                  {error}
+                </p>
               )}
               <button type="submit" disabled={loading} className="btn btn-primary mt-1 w-full">
                 {loading ? "Entrando…" : "Entrar"}

@@ -53,6 +53,10 @@ describe("EmbedSlot", () => {
 
     expect(screen.queryByTitle("Google Drive")).not.toBeInTheDocument();
     expect(showToast).toHaveBeenCalledWith(expect.stringMatching(/url http\(s\) válida/i), "error");
+
+    const input = screen.getByPlaceholderText(/pega el enlace embebible/i);
+    const alert = screen.getByRole("alert");
+    expect(input).toHaveAttribute("aria-describedby", alert.id);
   });
 
   it("connects a valid https URL and renders a sandboxed iframe", async () => {

@@ -83,6 +83,7 @@ export function EmbedSlot({ tagId, label, description }: { tagId: string; label:
           }}
           placeholder="Pega el enlace embebible (URL de vista pública)"
           aria-invalid={error}
+          aria-describedby={error ? `${tagId}-embed-error` : undefined}
           className={`flex-1 rounded-lg border bg-surface px-3 py-2 text-xs text-ink outline-none transition-colors focus:ring-2 ${
             error
               ? "border-danger focus:border-danger focus:ring-danger/10"
@@ -93,7 +94,11 @@ export function EmbedSlot({ tagId, label, description }: { tagId: string; label:
           Conectar
         </button>
       </form>
-      {error && <p className="text-[11px] font-medium text-danger">Debe empezar por http:// o https://</p>}
+      {error && (
+        <p id={`${tagId}-embed-error`} role="alert" className="text-[11px] font-medium text-danger">
+          Debe empezar por http:// o https://
+        </p>
+      )}
     </div>
   );
 }

@@ -76,4 +76,16 @@ describe("LoginPage — real auth mode (isDemo: false)", () => {
     expect(await screen.findByText("Correo no encontrado")).toBeInTheDocument();
     expect(screen.getByText("Recuperar contraseña")).toBeInTheDocument();
   });
+
+  it("announces the auth error to screen readers via role=alert", async () => {
+    loginWithPassword.mockResolvedValueOnce({ error: "Credenciales incorrectas" });
+    const user = userEvent.setup();
+    renderLogin();
+
+    await user.type(screen.getByLabelText("Correo"), "socio@eonesia.com");
+    await user.type(screen.getByLabelText("Contraseña"), "wrong");
+    await user.click(screen.getByRole("button", { name: "Entrar" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Credenciales incorrectas");
+  });
 });

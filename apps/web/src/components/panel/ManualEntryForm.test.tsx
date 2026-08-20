@@ -31,6 +31,10 @@ describe("ManualEntryForm", () => {
 
     expect(showToast).toHaveBeenCalledWith(expect.stringMatching(/completa todos los campos/i), "error");
     expect(screen.queryByText(/Canal:/)).not.toBeInTheDocument();
+
+    const canalInput = screen.getByLabelText("Canal");
+    const [firstAlert] = screen.getAllByRole("alert");
+    expect(canalInput).toHaveAttribute("aria-describedby", firstAlert.id);
   });
 
   it("saves a complete entry and lists it", async () => {

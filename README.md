@@ -9,7 +9,7 @@ Vista global, Producción, Métricas, Learning, Finanzas y Onboarding, cada una
 con sus sectores, páginas de tag, notificaciones agregadas y sistema de
 permisos granular por rol. Se suman una búsqueda global (⌘K), un centro de
 notificaciones, favoritos, un libro editable en Facturación ("Holded propio"),
-73 tests automatizados (58 web + 15 api) y CI en GitHub Actions. Todos los datos son de ejemplo
+74 tests automatizados (59 web + 15 api) y CI en GitHub Actions. Todos los datos son de ejemplo
 (empresa ficticia "Eonesia", activa desde junio de 2022 — ver
 `apps/web/src/data/company.ts`).
 
@@ -50,7 +50,7 @@ npm run dev:api       # http://localhost:4000 (opcional en esta fase, ver abajo)
 ### Calidad
 
 ```bash
-npm run test --workspace apps/web    # Vitest — 58 tests (notificaciones + marcar todas, permisos + excepciones por persona, búsqueda, auth, ErrorBoundary, embeds, entrada manual, ledger + totales, campana de notificaciones)
+npm run test --workspace apps/web    # Vitest — 59 tests (notificaciones + marcar todas, permisos + excepciones por persona, búsqueda, auth, ErrorBoundary, embeds, entrada manual, ledger + totales, campana de notificaciones)
 npm run test --workspace apps/api    # Vitest + supertest — 15 tests (rutas, integraciones + escape XSS, CORS, 404, cabeceras de seguridad)
 npm run lint --workspace apps/web    # oxlint
 npm run build                        # build de producción de web + api
@@ -175,6 +175,9 @@ reales que no existen en este entorno. Variables documentadas en
       alcanzable con una URL directa, sin necesidad de pasar por Google.
 - [x] `apps/api` usa `helmet` para cabeceras de seguridad por defecto
       (`X-Content-Type-Options`, oculta `X-Powered-By`, etc.).
+- [x] Errores de validación (login, entrada manual, embeds) llevan
+      `role="alert"` y `aria-describedby` — se anuncian a lectores de
+      pantalla, no solo se ven en rojo.
 - [ ] HTTPS en Hostinger — depende de la configuración del hosting final.
 - [ ] 2FA — Supabase lo soporta (TOTP); pendiente de activarlo en el proyecto
       real y añadir el flujo en el login cuando se decida.
