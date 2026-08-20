@@ -1,5 +1,6 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
 import { TABS } from "../data/tabs";
+import { useLocalStorage } from "./useLocalStorage";
 
 type CountsMap = Record<string, number>;
 
@@ -37,7 +38,7 @@ function initialCounts(): CountsMap {
 }
 
 export function NotificationsProvider({ children }: { children: ReactNode }) {
-  const [counts, setCounts] = useState<CountsMap>(initialCounts);
+  const [counts, setCounts] = useLocalStorage<CountsMap>("eopanel-notification-counts", initialCounts());
 
   const tagCount = useCallback((tagId: string) => counts[tagId] ?? 0, [counts]);
 
