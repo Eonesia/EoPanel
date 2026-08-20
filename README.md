@@ -126,6 +126,10 @@ esta fase los permisos se guardan en `localStorage`; el esquema
   "Estado" es un desplegable (no texto libre) con los mismos tres valores
   que el `check` de `invoices.estado` en `supabase/schema.sql` — así un
   error de tecleo no puede llegar a romper el insert el día que se conecte.
+  **Deuda bancaria** (Finanzas > Banco) es igual de editable — antes era
+  una tabla estática que solo un desarrollador podía actualizar; ahora los
+  socios añaden/editan préstamos ellos mismos, cumpliendo el "seguimiento"
+  que pide el spec §8 en vez de una foto fija del día en que se construyó.
 - **Backend Express**: `/api/health`, `/api/notifications/summary` (mock),
   `/api/auth/session` (valida un token de Supabase si está configurado) y
   `/api/integrations/*` (ver siguiente sección). El frontend **todavía no

@@ -162,10 +162,18 @@ const banco: Sector = {
       notifications: 0,
       summary: "Préstamos activos: cuotas, intereses y amortización.",
       detail: {
-        intro: "Seguimiento de préstamos activos — capital, cuota, interés y capital amortizado.",
-        table: {
-          columns: ["Préstamo", "Capital inicial", "Capital amortizado", "Cuota mensual", "Interés", "Fin de pago"],
-          rows: [
+        intro: "Seguimiento de préstamos activos — capital, cuota, interés y capital amortizado. Actualiza el % amortizado cada mes tras el pago de la cuota.",
+        ledger: {
+          addLabel: "Nuevo préstamo",
+          fields: [
+            { id: "Préstamo", label: "Préstamo", type: "text", placeholder: "Equipamiento VR" },
+            { id: "Capital inicial", label: "Capital inicial", type: "text", placeholder: "22.000 €" },
+            { id: "Capital amortizado", label: "Capital amortizado", type: "text", placeholder: "34% (7.480 €)" },
+            { id: "Cuota mensual", label: "Cuota mensual", type: "text", placeholder: "610 €" },
+            { id: "Interés", label: "Interés", type: "text", placeholder: "5,2% TAE" },
+            { id: "Fin de pago", label: "Fin de pago", type: "text", placeholder: "mar 2029" },
+          ],
+          seedRows: [
             { Préstamo: "Equipamiento VR", "Capital inicial": "22.000 €", "Capital amortizado": "34% (7.480 €)", "Cuota mensual": "610 €", Interés: "5,2% TAE", "Fin de pago": "mar 2029" },
             { Préstamo: "ICO Liquidez 2023", "Capital inicial": "15.000 €", "Capital amortizado": "61% (9.150 €)", "Cuota mensual": "420 €", Interés: "4,1% TAE", "Fin de pago": "jun 2027" },
           ],
