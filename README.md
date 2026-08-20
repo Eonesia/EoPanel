@@ -9,7 +9,7 @@ Vista global, Producción, Métricas, Learning, Finanzas y Onboarding, cada una
 con sus sectores, páginas de tag, notificaciones agregadas y sistema de
 permisos granular por rol. Se suman una búsqueda global (⌘K), un centro de
 notificaciones, favoritos, un libro editable en Facturación ("Holded propio"),
-verificación en dos pasos (TOTP), 106 tests automatizados (91 web + 15 api) y
+verificación en dos pasos (TOTP), 110 tests automatizados (95 web + 15 api) y
 CI en GitHub Actions. Todos los datos son de ejemplo (empresa ficticia
 "Eonesia", activa desde junio de 2022 — ver `apps/web/src/data/company.ts`).
 

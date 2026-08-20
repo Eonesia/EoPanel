@@ -13,17 +13,22 @@ const trendIcon: Record<NonNullable<StatTileType["trendDirection"]>, string> = {
   flat: "ti-minus",
 };
 
-export function StatTile({ label, value, trend, trendDirection = "flat" }: StatTileType) {
+export function StatTile({ label, value, trend, trendDirection }: StatTileType) {
+  // A tile can set trendDirection alone (just the colored arrow, no delta text) or
+  // pair it with `trend`. Gating on `trend` alone silently dropped every icon-only
+  // badge in the data — 15 stats across the app had a trendDirection nobody ever saw.
+  const showBadge = trend !== undefined || trendDirection !== undefined;
+  const direction = trendDirection ?? "flat";
   return (
     <div className="surface-card fade-in-up flex flex-col gap-2 p-4">
       <span className="text-xs font-medium uppercase tracking-wide text-ink-faint">{label}</span>
       <div className="flex items-end justify-between gap-2">
         <span className="font-display text-2xl font-bold text-ink">{value}</span>
-        {trend && (
+        {showBadge && (
           <span
-            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${trendStyles[trendDirection]}`}
+            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${trendStyles[direction]}`}
           >
-            <Icon name={trendIcon[trendDirection]} />
+            <Icon name={trendIcon[direction]} />
             {trend}
           </span>
         )}
