@@ -13,6 +13,7 @@ type AuthContextValue = {
   isDemo: boolean;
   loginDemo: (profileId: string) => void;
   loginWithPassword: (email: string, password: string) => Promise<{ error?: string }>;
+  resetPassword: (email: string) => Promise<{ error?: string }>;
   logout: () => Promise<void>;
 };
 
@@ -84,6 +85,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loginWithPassword: async (email: string, password: string) => {
         if (!supabase) return { error: "Supabase no está configurado en este entorno." };
         const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) return { error: error.message };
+        return {};
+      },
+      resetPassword: async (email: string) => {
+        if (!supabase) return { error: "Supabase no está configurado en este entorno." };
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/login`,
+        });
         if (error) return { error: error.message };
         return {};
       },

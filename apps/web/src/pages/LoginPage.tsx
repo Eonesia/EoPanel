@@ -1,12 +1,15 @@
 import { useState, type FormEvent } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/auth";
+import { useToast } from "../lib/toast";
 import { ALL_PROFILES } from "../data/socios";
 import { Icon } from "../components/ui/Icon";
 
 export function LoginPage() {
-  const { status, isDemo, loginDemo, loginWithPassword } = useAuth();
+  const { status, isDemo, loginDemo, loginWithPassword, resetPassword } = useAuth();
+  const { showToast } = useToast();
   const location = useLocation();
+  const [view, setView] = useState<"login" | "reset">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -24,6 +27,20 @@ export function LoginPage() {
     const res = await loginWithPassword(email, password);
     setLoading(false);
     if (res.error) setError(res.error);
+  }
+
+  async function handleReset(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    const res = await resetPassword(email);
+    setLoading(false);
+    if (res.error) {
+      setError(res.error);
+      return;
+    }
+    showToast(`Enlace de recuperación enviado a ${email}`);
+    setView("login");
   }
 
   return (
@@ -74,6 +91,44 @@ export function LoginPage() {
                 ))}
               </div>
             </>
+          ) : view === "reset" ? (
+            <form onSubmit={handleReset} className="flex flex-col gap-4">
+              <div>
+                <p className="text-sm font-semibold text-ink">Recuperar contraseña</p>
+                <p className="mt-1 text-xs text-ink-faint">
+                  Te enviaremos un enlace a tu correo para crear una contraseña nueva.
+                </p>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="reset-email" className="text-xs font-semibold text-ink-soft">
+                  Correo
+                </label>
+                <input
+                  id="reset-email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="rounded-lg border border-border-strong bg-surface px-3 py-2.5 text-sm text-ink outline-none transition-colors focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+                  placeholder="tu@eonesia.com"
+                />
+              </div>
+              {error && <p className="rounded-lg bg-danger-bg px-3 py-2 text-xs font-medium text-danger">{error}</p>}
+              <button type="submit" disabled={loading} className="btn btn-primary w-full">
+                {loading ? "Enviando…" : "Enviar enlace"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setView("login");
+                  setError(null);
+                }}
+                className="text-center text-xs font-medium text-ink-faint transition-colors hover:text-ink"
+              >
+                Volver a iniciar sesión
+              </button>
+            </form>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
@@ -92,9 +147,21 @@ export function LoginPage() {
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="password" className="text-xs font-semibold text-ink-soft">
-                  Contraseña
-                </label>
+                <div className="flex items-center justify-between">
+                  <label htmlFor="password" className="text-xs font-semibold text-ink-soft">
+                    Contraseña
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setView("reset");
+                      setError(null);
+                    }}
+                    className="text-xs font-medium text-brand-600 transition-colors hover:text-brand-700"
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </button>
+                </div>
                 <input
                   id="password"
                   type="password"
