@@ -51,6 +51,7 @@ npm run dev:api       # http://localhost:4000 (opcional en esta fase, ver abajo)
 
 ```bash
 npm run test --workspace apps/web    # Vitest — 27 tests (notificaciones, permisos, búsqueda, auth, ErrorBoundary)
+npm run test --workspace apps/api    # Vitest + supertest — 12 tests (rutas, integraciones, CORS, 404)
 npm run lint --workspace apps/web    # oxlint
 npm run build                        # build de producción de web + api
 ```
