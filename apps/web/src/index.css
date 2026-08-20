@@ -1,0 +1,242 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap");
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Manrope", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-page: #f5f6fb;
+  --color-page-2: #eef0f9;
+  --color-surface: #ffffff;
+  --color-surface-2: #f8f9fd;
+  --color-surface-inverse: #14152b;
+
+  --color-border: #e6e8f2;
+  --color-border-strong: #d7dae8;
+
+  --color-ink: #13152a;
+  --color-ink-soft: #565973;
+  --color-ink-faint: #8d90a8;
+  --color-ink-inverse: #f4f5fb;
+
+  --color-brand-50: #f0eeff;
+  --color-brand-100: #e1ddff;
+  --color-brand-400: #7c6cf6;
+  --color-brand-500: #5b45f0;
+  --color-brand-600: #4632d6;
+  --color-brand-700: #3625ab;
+
+  --color-cyan-400: #35c7e8;
+  --color-cyan-500: #14a8cc;
+
+  --color-success: #17a76a;
+  --color-success-bg: #e6f8ef;
+  --color-warning: #c8790a;
+  --color-warning-bg: #fdf1e0;
+  --color-danger: #d8384f;
+  --color-danger-bg: #fce9ec;
+  --color-neutral-bg: #eef0f7;
+
+  --shadow-card: 0 1px 2px rgba(19, 21, 42, 0.04), 0 8px 24px -12px rgba(19, 21, 42, 0.08);
+  --shadow-card-hover: 0 2px 6px rgba(19, 21, 42, 0.06), 0 16px 36px -14px rgba(91, 69, 240, 0.18);
+  --shadow-pop: 0 20px 45px -20px rgba(19, 21, 42, 0.35);
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-page);
+    background-image:
+      radial-gradient(1200px 600px at 100% -10%, rgba(91, 69, 240, 0.07), transparent 60%),
+      radial-gradient(900px 500px at -10% 0%, rgba(20, 168, 204, 0.06), transparent 55%);
+    background-attachment: fixed;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  #root {
+    min-height: 100svh;
+  }
+
+  ::selection {
+    background: var(--color-brand-100);
+    color: var(--color-brand-700);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-strong) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border-radius: 999px;
+  }
+}
+
+@layer components {
+  .surface-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.35s var(--ease-out-quart), transform 0.35s var(--ease-out-quart), border-color 0.35s;
+  }
+
+  .surface-card-interactive {
+    cursor: pointer;
+  }
+  .surface-card-interactive:hover {
+    box-shadow: var(--shadow-card-hover);
+    border-color: var(--color-brand-100);
+    transform: translateY(-2px);
+  }
+  .surface-card-interactive:active {
+    transform: translateY(0px) scale(0.99);
+    transition-duration: 0.12s;
+  }
+
+  .brand-gradient {
+    background-image: linear-gradient(135deg, var(--color-brand-500), var(--color-cyan-500));
+  }
+
+  .brand-gradient-text {
+    background-image: linear-gradient(135deg, var(--color-brand-500), var(--color-cyan-500));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 13.5px;
+    border-radius: 10px;
+    padding: 9px 16px;
+    transition: transform 0.18s var(--ease-out-quart), box-shadow 0.25s, background-color 0.2s, opacity 0.2s, border-color 0.2s;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .btn:active {
+    transform: scale(0.965);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--color-brand-400);
+    outline-offset: 2px;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .btn-primary {
+    color: white;
+    background-image: linear-gradient(135deg, var(--color-brand-500), var(--color-brand-600));
+    box-shadow: 0 1px 1px rgba(19, 21, 42, 0.05), 0 8px 20px -8px rgba(91, 69, 240, 0.55);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 1px 1px rgba(19, 21, 42, 0.05), 0 12px 26px -8px rgba(91, 69, 240, 0.65);
+    filter: brightness(1.04);
+  }
+
+  .btn-secondary {
+    color: var(--color-ink);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-strong);
+  }
+  .btn-secondary:hover {
+    border-color: var(--color-brand-400);
+    color: var(--color-brand-600);
+    background: var(--color-brand-50);
+  }
+
+  .btn-ghost {
+    color: var(--color-ink-soft);
+    background: transparent;
+  }
+  .btn-ghost:hover {
+    background: var(--color-surface-2);
+    color: var(--color-ink);
+  }
+
+  .badge-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    background-image: linear-gradient(135deg, #ff6b6b, #e8354f);
+    color: white;
+    box-shadow: 0 2px 6px -1px rgba(232, 53, 79, 0.6);
+    animation: badge-pop 0.32s var(--ease-spring);
+  }
+
+  @keyframes badge-pop {
+    from {
+      transform: scale(0.4);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .tag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 10px 5px 8px;
+    border-radius: 999px;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    color: var(--color-ink-soft);
+    transition: all 0.2s var(--ease-out-quart);
+  }
+  .tag-pill:hover {
+    background: var(--color-brand-50);
+    border-color: var(--color-brand-100);
+    color: var(--color-brand-700);
+    transform: translateY(-1px);
+  }
+
+  .fade-in-up {
+    animation: fade-in-up 0.4s var(--ease-out-quart) both;
+  }
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
