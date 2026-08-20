@@ -191,8 +191,14 @@ reales que no existen en este entorno. Variables documentadas en
 - [x] Sin dependencias de CDN de terceros en tiempo de ejecución — se quitó
       un `<link>` a la webfont de Tabler Icons en `cdnjs.cloudflare.com` que
       quedó huérfano de cuando el proyecto migró a `@tabler/icons-react`
-      (SVG en el bundle); en una herramienta interna y confidencial, cada
-      petición a un host externo es una fuga innecesaria.
+      (SVG en el bundle); también se autoalojaron Inter y Manrope
+      (`apps/web/public/fonts/`, ~173 KB en 4 `.woff2` variables — solo
+      subconjuntos latin/latin-ext, sin cirílico/griego/vietnamita que la
+      app nunca usa) en vez de cargarlas desde `fonts.googleapis.com`. En
+      una herramienta interna y confidencial, cada petición a un host
+      externo filtra la IP del visitante innecesariamente y añade un punto
+      de fallo si ese host no es alcanzable (p. ej. detrás de un proxy
+      corporativo estricto).
 - [x] `supabase/schema.sql`: `embeds.url` tiene un `check` que exige
       `http(s)://` a nivel de base de datos (mismo requisito que
       `isEmbeddableUrl()` en el frontend, por si algún día se escribe ahí sin
