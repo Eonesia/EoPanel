@@ -71,13 +71,15 @@ export function PermissionsAdminPage() {
           ))}
         </div>
 
-        <p className="mt-6 flex items-start gap-2 rounded-xl border border-dashed border-border-strong bg-surface-2 px-4 py-3 text-xs text-ink-faint">
+        <div className="mt-6 flex items-start gap-2 rounded-xl border border-dashed border-border-strong bg-surface-2 px-4 py-3 text-xs text-ink-faint">
           <Icon name="ti-info-circle" className="mt-0.5 shrink-0" />
-          Los permisos se guardan localmente en este navegador en esta fase. Al conectar Supabase, este panel
-          escribirá directamente en la tabla <code className="rounded bg-surface px-1 py-0.5">tab_permissions</code>{" "}
-          (ver <code className="rounded bg-surface px-1 py-0.5">supabase/schema.sql</code>) para que el permiso
-          aplique en todos los dispositivos y quede reforzado por RLS en el servidor.
-        </p>
+          <p>
+            Los permisos se guardan localmente en este navegador en esta fase. Al conectar Supabase, este panel
+            escribirá directamente en la tabla <code className="rounded bg-surface px-1 py-0.5">tab_permissions</code>{" "}
+            (ver <code className="rounded bg-surface px-1 py-0.5">supabase/schema.sql</code>) para que el permiso
+            aplique en todos los dispositivos y quede reforzado por RLS en el servidor.
+          </p>
+        </div>
       </div>
     </AppShell>
   );

@@ -47,8 +47,11 @@ export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: 
 
       <nav className="flex min-w-0 flex-1 items-center gap-1.5 text-sm" aria-label="Ruta de navegación">
         {crumbs.map((c, i) => (
-          <span key={i} className="flex items-center gap-1.5 min-w-0">
-            {i > 0 && <Icon name="ti-chevron-right" className="text-xs text-ink-faint" />}
+          <span
+            key={i}
+            className={`items-center gap-1.5 min-w-0 ${i < crumbs.length - 1 ? "hidden sm:flex" : "flex min-w-0 flex-1"}`}
+          >
+            {i > 0 && <Icon name="ti-chevron-right" className="hidden shrink-0 text-xs text-ink-faint sm:inline" />}
             {c.to ? (
               <button
                 onClick={() => navigate(c.to as string)}
