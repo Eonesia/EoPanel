@@ -87,11 +87,17 @@ export function EditableLedger({
             <thead>
               <tr className="border-b border-border bg-surface-2 text-left">
                 {fields.map((f) => (
-                  <th key={f.id} className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+                  <th
+                    key={f.id}
+                    scope="col"
+                    className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ink-faint"
+                  >
                     {f.label}
                   </th>
                 ))}
-                <th className="w-10 px-2 py-3" />
+                <th scope="col" className="w-10 px-2 py-3">
+                  <span className="sr-only">Acciones</span>
+                </th>
               </tr>
             </thead>
             <tbody>

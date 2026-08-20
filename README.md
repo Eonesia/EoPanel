@@ -185,6 +185,9 @@ reales que no existen en este entorno. Variables documentadas en
       `aria-label` — un `aria-label` estático ocultaba el contador visual a
       lectores de pantalla (el `aria-label` sustituye a todo el contenido
       descendiente al calcular el nombre accesible).
+- [x] Las tablas (`DataTable`, `EditableLedger`) marcan sus cabeceras con
+      `scope="col"`, estándar para que un lector de pantalla anuncie la
+      columna al recorrer la fila.
 - [ ] HTTPS en Hostinger — depende de la configuración del hosting final.
 - [ ] 2FA — Supabase lo soporta (TOTP); pendiente de activarlo en el proyecto
       real y añadir el flujo en el login cuando se decida.

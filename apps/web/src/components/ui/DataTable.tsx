@@ -17,7 +17,11 @@ export function DataTable({ columns, rows }: { columns: string[]; rows: TableRow
           <thead>
             <tr className="border-b border-border bg-surface-2 text-left">
               {columns.map((c) => (
-                <th key={c} className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+                <th
+                  key={c}
+                  scope="col"
+                  className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ink-faint"
+                >
                   {c}
                 </th>
               ))}
