@@ -50,7 +50,7 @@ npm run dev:api       # http://localhost:4000 (opcional en esta fase, ver abajo)
 ### Calidad
 
 ```bash
-npm run test --workspace apps/web    # Vitest — 27 tests (notificaciones, permisos, búsqueda, auth, ErrorBoundary)
+npm run test --workspace apps/web    # Vitest — 29 tests (notificaciones, permisos, búsqueda, auth, ErrorBoundary)
 npm run test --workspace apps/api    # Vitest + supertest — 12 tests (rutas, integraciones, CORS, 404)
 npm run lint --workspace apps/web    # oxlint
 npm run build                        # build de producción de web + api
@@ -74,6 +74,16 @@ cuanto `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` están definidas, el
 login pasa automáticamente a email + contraseña real contra Supabase y el
 selector de perfiles desaparece (no existe impersonación de otros usuarios
 fuera del modo demo — sería un agujero de seguridad).
+
+**Importante para producción**: las variables `VITE_*` las incrusta Vite en
+el JS **al hacer `npm run build`**, no las lee en caliente el servidor donde
+se aloje — a diferencia de las variables de `apps/api`, que sí se leen en
+tiempo de ejecución porque Express es un proceso Node de verdad. Si defines
+`VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` en el panel de Hostinger
+*después* de haber generado `apps/web/dist`, no tendrán ningún efecto: hay
+que tenerlas puestas en `apps/web/.env.local` (o como variables de entorno
+del propio proceso de build) **antes** de ejecutar el build, y volver a
+generar y subir `dist/` cada vez que cambien.
 
 ## Sistema de permisos
 
