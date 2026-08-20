@@ -9,7 +9,7 @@ Vista global, Producción, Métricas, Learning, Finanzas y Onboarding, cada una
 con sus sectores, páginas de tag, notificaciones agregadas y sistema de
 permisos granular por rol. Se suman una búsqueda global (⌘K), un centro de
 notificaciones, favoritos, un libro editable en Facturación ("Holded propio"),
-41 tests automatizados y CI en GitHub Actions. Todos los datos son de ejemplo
+53 tests automatizados (41 web + 12 api) y CI en GitHub Actions. Todos los datos son de ejemplo
 (empresa ficticia "Eonesia", activa desde junio de 2022 — ver
 `apps/web/src/data/company.ts`).
 
@@ -50,7 +50,7 @@ npm run dev:api       # http://localhost:4000 (opcional en esta fase, ver abajo)
 ### Calidad
 
 ```bash
-npm run test --workspace apps/web    # Vitest — 36 tests (notificaciones, permisos + excepciones por persona, búsqueda, auth, ErrorBoundary)
+npm run test --workspace apps/web    # Vitest — 41 tests (notificaciones, permisos + excepciones por persona, búsqueda, auth, ErrorBoundary, embeds)
 npm run test --workspace apps/api    # Vitest + supertest — 12 tests (rutas, integraciones, CORS, 404)
 npm run lint --workspace apps/web    # oxlint
 npm run build                        # build de producción de web + api
@@ -128,7 +128,11 @@ esta fase los permisos se guardan en `localStorage`; el esquema
   local porque los datos de esta fase son de ejemplo por diseño (spec §7).
 - **Biblioteca** (Drive/FTPs/Trello/Miro): los slots de embed funcionan de
   verdad — pega la URL pública y queda embebida en un iframe dentro del
-  panel, guardada en `localStorage` hasta que haya backend.
+  panel, guardada en `localStorage` hasta que haya backend. Solo se aceptan
+  URLs `http(s)` (se rechazan `javascript:`/`data:`/etc.) y el iframe lleva
+  `sandbox` sin `allow-top-navigation`, para que la página embebida no pueda
+  ejecutar código fuera de su marco ni redirigir todo el panel — ver
+  `apps/web/src/components/panel/EmbedSlot.tsx`.
 - **RRSS** (Web/LinkedIn/Instagram/Facebook/TikTok): el formulario de entrada
   manual funciona de verdad (spec §8 — "construir la vista para entrada
   manual"), guardando cada registro en `localStorage`.

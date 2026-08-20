@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from "react";
 import { Icon } from "../components/ui/Icon";
 
-type ToastKind = "success" | "info";
+type ToastKind = "success" | "info" | "error";
 type ToastItem = { id: number; message: string; kind: ToastKind };
 
 type ToastContextValue = {
@@ -10,10 +10,11 @@ type ToastContextValue = {
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 
-const ICONS: Record<ToastKind, string> = { success: "ti-check", info: "ti-info-circle" };
+const ICONS: Record<ToastKind, string> = { success: "ti-check", info: "ti-info-circle", error: "ti-alert-circle" };
 const STYLES: Record<ToastKind, string> = {
   success: "bg-ink text-white",
   info: "bg-ink text-white",
+  error: "bg-danger text-white",
 };
 
 export function ToastProvider({ children }: { children: ReactNode }) {
@@ -37,7 +38,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             key={t.id}
             className={`fade-in-up pointer-events-auto flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium shadow-pop ${STYLES[t.kind]}`}
           >
-            <Icon name={ICONS[t.kind]} className="text-success" />
+            <Icon name={ICONS[t.kind]} className={t.kind === "error" ? "text-white" : "text-success"} />
             {t.message}
           </div>
         ))}

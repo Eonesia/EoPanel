@@ -3,9 +3,20 @@ import { Icon } from "../ui/Icon";
 import { useLocalStorage } from "../../lib/useLocalStorage";
 import { useToast } from "../../lib/toast";
 
+/** Solo http(s): bloquea `javascript:`, `data:`, `vbscript:`, etc. pegados por error o con mala intención. */
+export function isEmbeddableUrl(value: string): boolean {
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
 export function EmbedSlot({ tagId, label, description }: { tagId: string; label: string; description: string }) {
   const [url, setUrl] = useLocalStorage<string>(`eopanel-embed-${tagId}`, "");
   const [draft, setDraft] = useState(url);
+  const [error, setError] = useState(false);
   const { showToast } = useToast();
 
   if (url) {
@@ -27,7 +38,14 @@ export function EmbedSlot({ tagId, label, description }: { tagId: string; label:
             Desconectar
           </button>
         </div>
-        <iframe src={url} title={label} className="h-[420px] w-full border-0" loading="lazy" />
+        <iframe
+          src={url}
+          title={label}
+          className="h-[420px] w-full border-0"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        />
       </div>
     );
   }
@@ -45,22 +63,37 @@ export function EmbedSlot({ tagId, label, description }: { tagId: string; label:
         className="mt-1 flex w-full max-w-md gap-2"
         onSubmit={(e) => {
           e.preventDefault();
-          if (draft.trim()) {
-            setUrl(draft.trim());
-            showToast(`${label} conectado`);
+          const trimmed = draft.trim();
+          if (!trimmed) return;
+          if (!isEmbeddableUrl(trimmed)) {
+            setError(true);
+            showToast("Ese enlace no es una URL http(s) válida", "error");
+            return;
           }
+          setError(false);
+          setUrl(trimmed);
+          showToast(`${label} conectado`);
         }}
       >
         <input
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          onChange={(e) => {
+            setDraft(e.target.value);
+            if (error) setError(false);
+          }}
           placeholder="Pega el enlace embebible (URL de vista pública)"
-          className="flex-1 rounded-lg border border-border-strong bg-surface px-3 py-2 text-xs text-ink outline-none transition-colors focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+          aria-invalid={error}
+          className={`flex-1 rounded-lg border bg-surface px-3 py-2 text-xs text-ink outline-none transition-colors focus:ring-2 ${
+            error
+              ? "border-danger focus:border-danger focus:ring-danger/10"
+              : "border-border-strong focus:border-brand-400 focus:ring-brand-100"
+          }`}
         />
         <button type="submit" className="btn btn-secondary !py-2 !text-xs">
           Conectar
         </button>
       </form>
+      {error && <p className="text-[11px] font-medium text-danger">Debe empezar por http:// o https://</p>}
     </div>
   );
 }

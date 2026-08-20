@@ -1,6 +1,7 @@
 import {
   IconActivity,
   IconAddressBook,
+  IconAlertCircle,
   IconApps,
   IconArrowLeft,
   IconArrowsHorizontal,
@@ -116,6 +117,7 @@ import {
 const ICONS: Record<string, TablerIcon> = {
   "ti-activity": IconActivity,
   "ti-address-book": IconAddressBook,
+  "ti-alert-circle": IconAlertCircle,
   "ti-apps": IconApps,
   "ti-arrow-left": IconArrowLeft,
   "ti-arrows-horizontal": IconArrowsHorizontal,
