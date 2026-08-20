@@ -1,0 +1,16 @@
+# SPA fallback para Hostinger (Apache) — sin esto, refrescar la página o abrir
+# un enlace directo a cualquier ruta anidada (p.ej. /panel/finanzas/facturacion/facturas)
+# devuelve 404, porque esos archivos no existen de verdad en el servidor: solo
+# existe index.html y React Router resuelve la ruta en el navegador.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Deja pasar archivos y carpetas que sí existen (assets, favicon, robots.txt...)
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Todo lo demás cae en index.html para que la app lo enrute
+  RewriteRule ^ index.html [L]
+</IfModule>

@@ -148,7 +148,15 @@ reales que no existen en este entorno. Variables documentadas en
 ## Despliegue (pendiente, notas para cuando haya credenciales)
 
 - **Frontend**: `npm run build:web` genera `apps/web/dist` — servible como
-  sitio estático en Hostinger.
+  sitio estático en Hostinger. Incluye `.htaccess` con reescritura para
+  Apache: sin él, refrescar la página o abrir un enlace directo a cualquier
+  ruta anidada (p.ej. `/panel/finanzas/facturacion/facturas`) da 404, porque
+  esa ruta solo existe en el navegador vía React Router, no como archivo real
+  en el servidor. Verificado que sin reglas de fallback un servidor estático
+  devuelve 404 en rutas anidadas; el patrón de `.htaccess` es el estándar
+  para Apache pero no he podido probarlo contra un Apache real en este
+  entorno — confírmalo con un refresh en `/panel/algo/algo` nada más
+  desplegar.
 - **Backend**: `npm run build:api` compila a `apps/api/dist`; necesita un
   proceso Node persistente (no es un sitio estático) — confirmar qué plan de
   Hostinger lo soporta, o considerar desplegarlo aparte si el hosting
