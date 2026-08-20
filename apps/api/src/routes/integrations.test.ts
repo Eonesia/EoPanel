@@ -76,4 +76,25 @@ describe("GET /api/integrations/gmail/oauth/callback", () => {
     const res = await request(app).get("/api/integrations/gmail/oauth/callback?code=abc123");
     expect(res.status).toBe(503);
   });
+
+  it("escapes an HTML/script payload in `error` instead of reflecting it verbatim (XSS)", async () => {
+    const res = await request(app).get(
+      "/api/integrations/gmail/oauth/callback?error=" + encodeURIComponent("<script>alert(1)</script>"),
+    );
+    expect(res.status).toBe(400);
+    expect(res.text).not.toContain("<script>alert(1)</script>");
+    expect(res.text).toContain("&lt;script&gt;");
+  });
+
+  it("escapes an HTML/script payload in `state` instead of reflecting it verbatim (XSS)", async () => {
+    vi.stubEnv("GOOGLE_CLIENT_ID", "test-client-id");
+    vi.stubEnv("GOOGLE_CLIENT_SECRET", "test-secret");
+    const res = await request(app).get(
+      "/api/integrations/gmail/oauth/callback?code=abc123&state=" +
+        encodeURIComponent("<img src=x onerror=alert(1)>"),
+    );
+    expect(res.status).toBe(200);
+    expect(res.text).not.toContain("<img src=x onerror=alert(1)>");
+    expect(res.text).toContain("&lt;img src=x onerror=alert(1)&gt;");
+  });
 });

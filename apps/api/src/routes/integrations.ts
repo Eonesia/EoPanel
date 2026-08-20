@@ -8,6 +8,20 @@ function configured(...vars: (string | undefined)[]) {
   return vars.every((v) => Boolean(v && v.trim()));
 }
 
+/**
+ * Este endpoint devuelve HTML construido con `res.send()` a partir de parámetros
+ * de la query string (que un atacante controla llamando a la URL directamente,
+ * sin pasar por Google) — hay que escapar antes de interpolar para evitar XSS reflejado.
+ */
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 /** Estado agregado de cada integración externa — el frontend podrá consumir esto
  *  para sustituir las tarjetas "no conectado" por el estado real. */
 integrationsRouter.get("/status", (_req, res) => {
@@ -61,7 +75,7 @@ integrationsRouter.get("/gmail/oauth/callback", async (req, res) => {
   const { code, state, error } = req.query;
 
   if (error) {
-    res.status(400).send(`Autorización cancelada o denegada: ${error}`);
+    res.status(400).send(`Autorización cancelada o denegada: ${escapeHtml(String(error))}`);
     return;
   }
   if (!clientId || !clientSecret || !code) {
@@ -73,6 +87,6 @@ integrationsRouter.get("/gmail/oauth/callback", async (req, res) => {
   // y persistir { account: state, access_token, refresh_token, expiry } en Supabase
   // (tabla a definir, p.ej. mail_accounts) una vez el proyecto esté conectado.
   res.send(
-    `<p>Autorización recibida para la cuenta <b>${state}</b>. Falta implementar el intercambio de token y su persistencia — ver TODO en apps/api/src/routes/integrations.ts.</p>`,
+    `<p>Autorización recibida para la cuenta <b>${escapeHtml(String(state))}</b>. Falta implementar el intercambio de token y su persistencia — ver TODO en apps/api/src/routes/integrations.ts.</p>`,
   );
 });

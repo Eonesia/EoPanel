@@ -9,7 +9,7 @@ Vista global, Producción, Métricas, Learning, Finanzas y Onboarding, cada una
 con sus sectores, páginas de tag, notificaciones agregadas y sistema de
 permisos granular por rol. Se suman una búsqueda global (⌘K), un centro de
 notificaciones, favoritos, un libro editable en Facturación ("Holded propio"),
-70 tests automatizados (58 web + 12 api) y CI en GitHub Actions. Todos los datos son de ejemplo
+72 tests automatizados (58 web + 14 api) y CI en GitHub Actions. Todos los datos son de ejemplo
 (empresa ficticia "Eonesia", activa desde junio de 2022 — ver
 `apps/web/src/data/company.ts`).
 
@@ -51,7 +51,7 @@ npm run dev:api       # http://localhost:4000 (opcional en esta fase, ver abajo)
 
 ```bash
 npm run test --workspace apps/web    # Vitest — 58 tests (notificaciones + marcar todas, permisos + excepciones por persona, búsqueda, auth, ErrorBoundary, embeds, entrada manual, ledger + totales, campana de notificaciones)
-npm run test --workspace apps/api    # Vitest + supertest — 12 tests (rutas, integraciones, CORS, 404)
+npm run test --workspace apps/api    # Vitest + supertest — 14 tests (rutas, integraciones + escape XSS, CORS, 404)
 npm run lint --workspace apps/web    # oxlint
 npm run build                        # build de producción de web + api
 ```
@@ -168,6 +168,11 @@ reales que no existen en este entorno. Variables documentadas en
       Finanzas restringida a socios + permisos explícitos.
 - [x] Permisos granulares por pestaña/sector para Empleado/Becario, con
       bloqueo de acceso directo por URL además de ocultar la navegación.
+- [x] Embeds (Biblioteca) solo aceptan URLs `http(s)` y el iframe lleva
+      `sandbox` sin `allow-top-navigation`.
+- [x] El callback OAuth de Gmail (`apps/api`) escapa los parámetros de la
+      query antes de interpolarlos en HTML — sin esto era un XSS reflejado
+      alcanzable con una URL directa, sin necesidad de pasar por Google.
 - [ ] HTTPS en Hostinger — depende de la configuración del hosting final.
 - [ ] 2FA — Supabase lo soporta (TOTP); pendiente de activarlo en el proyecto
       real y añadir el flujo en el login cuando se decida.
