@@ -6,7 +6,7 @@ import { ALL_PROFILES } from "../data/socios";
 import { Icon } from "../components/ui/Icon";
 
 export function LoginPage() {
-  const { status, isDemo, loginDemo, loginWithPassword, resetPassword, verifyMfaChallenge } = useAuth();
+  const { status, isDemo, loginDemo, loginWithPassword, resetPassword, verifyMfaChallenge, logout } = useAuth();
   const { showToast } = useToast();
   const location = useLocation();
   const [view, setView] = useState<"login" | "reset">("login");
@@ -113,6 +113,13 @@ export function LoginPage() {
               )}
               <button type="submit" disabled={loading || mfaCode.length !== 6} className="btn btn-primary w-full">
                 {loading ? "Verificando…" : "Verificar"}
+              </button>
+              <button
+                type="button"
+                onClick={() => logout()}
+                className="text-center text-xs font-medium text-ink-faint transition-colors hover:text-ink"
+              >
+                Cancelar y volver a iniciar sesión
               </button>
             </form>
           ) : isDemo ? (

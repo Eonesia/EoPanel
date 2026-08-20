@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 import { LoginPage } from "./LoginPage";
 
 const verifyMfaChallenge = vi.fn();
+const logout = vi.fn();
 
 vi.mock("../lib/auth", () => ({
   useAuth: () => ({
@@ -14,6 +15,7 @@ vi.mock("../lib/auth", () => ({
     loginWithPassword: vi.fn(),
     resetPassword: vi.fn(),
     verifyMfaChallenge,
+    logout,
   }),
 }));
 
@@ -74,5 +76,14 @@ describe("LoginPage — mfa_challenge status", () => {
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Código incorrecto");
     expect(input.value).toBe("");
+  });
+
+  it("lets the user cancel and sign out instead of being stuck if they can't complete the code", async () => {
+    const user = userEvent.setup();
+    renderLogin();
+
+    await user.click(screen.getByRole("button", { name: "Cancelar y volver a iniciar sesión" }));
+
+    expect(logout).toHaveBeenCalled();
   });
 });
