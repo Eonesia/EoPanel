@@ -9,6 +9,7 @@ import { EmbedSlot } from "./EmbedSlot";
 import { ManualEntryForm } from "./ManualEntryForm";
 import { IntegrationStatus } from "./IntegrationStatus";
 import { EditableLedger } from "./EditableLedger";
+import { EditableTable } from "./EditableTable";
 import { useNotifications } from "../../lib/notifications";
 import { useToast } from "../../lib/toast";
 import { useFavorites } from "../../lib/favorites";
@@ -83,7 +84,17 @@ export function TagDetailView({ tabId, sector, tag }: { tabId: string; sector: S
 
         {tag.detail.list && tag.detail.list.length > 0 && <ListRows items={tag.detail.list} />}
 
-        {tag.detail.table && <DataTable columns={tag.detail.table.columns} rows={tag.detail.table.rows} />}
+        {tag.detail.table &&
+          (tag.detail.table.editableColumn ? (
+            <EditableTable
+              tagId={tag.id}
+              columns={tag.detail.table.columns}
+              seedRows={tag.detail.table.rows}
+              editableColumn={tag.detail.table.editableColumn}
+            />
+          ) : (
+            <DataTable columns={tag.detail.table.columns} rows={tag.detail.table.rows} />
+          ))}
 
         {tag.detail.ledger && (
           <EditableLedger

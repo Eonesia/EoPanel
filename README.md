@@ -9,7 +9,7 @@ Vista global, Producción, Métricas, Learning, Finanzas y Onboarding, cada una
 con sus sectores, páginas de tag, notificaciones agregadas y sistema de
 permisos granular por rol. Se suman una búsqueda global (⌘K), un centro de
 notificaciones, favoritos, un libro editable en Facturación ("Holded propio"),
-verificación en dos pasos (TOTP), 110 tests automatizados (95 web + 15 api) y
+verificación en dos pasos (TOTP), 116 tests automatizados (101 web + 15 api) y
 CI en GitHub Actions. Todos los datos son de ejemplo (empresa ficticia
 "Eonesia", activa desde junio de 2022 — ver `apps/web/src/data/company.ts`).
 
@@ -130,6 +130,11 @@ esta fase los permisos se guardan en `localStorage`; el esquema
   una tabla estática que solo un desarrollador podía actualizar; ahora los
   socios añaden/editan préstamos ellos mismos, cumpliendo el "seguimiento"
   que pide el spec §8 en vez de una foto fija del día en que se construyó.
+  **Previsión > Ingresos/Gastos** (Finanzas) tiene su columna "Real (a
+  fecha)" editable en la propia celda (clic → escribe → Enter o clic
+  fuera para guardar) vía el nuevo `EditableTable` — el texto de la
+  página ya decía "actualizada manualmente por los socios cada mes" pero
+  no había ninguna forma de hacerlo; ahora la hay.
 - **Backend Express**: `/api/health`, `/api/notifications/summary` (mock),
   `/api/auth/session` (valida un token de Supabase si está configurado) y
   `/api/integrations/*` (ver siguiente sección). El frontend **todavía no

@@ -26,7 +26,12 @@ export type TagDetail = {
   intro: string;
   stats?: StatTile[];
   list?: ListItem[];
-  table?: { columns: string[]; rows: TableRow[] };
+  table?: {
+    columns: string[];
+    rows: TableRow[];
+    /** Si se indica, esa columna se puede editar in-situ (fila fija, valor cambia con el tiempo — p.ej. la cifra "real" mensual de una previsión). Persistido por índice de fila en localStorage. */
+    editableColumn?: string;
+  };
   note?: string;
   /** Slot para contenido embebido (Drive/FTP/Trello/Miro) — el enlace se guarda localmente hasta que exista backend. */
   embed?: { label: string; description: string };

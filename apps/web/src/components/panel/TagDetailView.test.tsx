@@ -36,4 +36,18 @@ describe("TagDetailView wiring", () => {
     // 3.400 + 2.100 + 3.400 from the seeded invoices in apps/web/src/data/finanzas.ts
     expect(screen.getByText("8.900 €")).toBeInTheDocument();
   });
+
+  it("renders Previsión > Ingresos as an editable table, not a static DataTable", () => {
+    // Same class of bug as above: the intro text promises "actualizada
+    // manualmente por los socios cada mes" — confirm the actual editable
+    // affordance (the pencil-icon button) is reachable through TagDetailView,
+    // not just working in EditableTable's own isolated test.
+    renderTag("finanzas", "prevision", "ingresos");
+    expect(screen.getByRole("button", { name: /61.200 €/ })).toBeInTheDocument();
+  });
+
+  it("renders Banco > Deuda bancaria as an editable ledger with an add button", () => {
+    renderTag("finanzas", "banco", "deuda-bancaria");
+    expect(screen.getByRole("button", { name: "Nuevo préstamo" })).toBeInTheDocument();
+  });
 });

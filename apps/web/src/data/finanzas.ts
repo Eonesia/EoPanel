@@ -82,6 +82,7 @@ const prevision: Sector = {
         intro: "Previsión de ingresos actualizada manualmente por los socios cada mes.",
         table: {
           columns: ["Trimestre", "Previsto", "Real (a fecha)"],
+          editableColumn: "Real (a fecha)",
           rows: [
             { Trimestre: "Q1 2026", Previsto: "58.000 €", "Real (a fecha)": "61.200 €" },
             { Trimestre: "Q2 2026", Previsto: "63.000 €", "Real (a fecha)": "65.400 €" },
@@ -100,6 +101,7 @@ const prevision: Sector = {
         intro: "Previsión de gastos, incluyendo nóminas, infraestructura y producción.",
         table: {
           columns: ["Trimestre", "Previsto", "Real (a fecha)"],
+          editableColumn: "Real (a fecha)",
           rows: [
             { Trimestre: "Q1 2026", Previsto: "36.000 €", "Real (a fecha)": "34.800 €" },
             { Trimestre: "Q2 2026", Previsto: "38.500 €", "Real (a fecha)": "37.100 €" },
