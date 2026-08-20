@@ -4,6 +4,7 @@ import { TABS } from "../../data/tabs";
 import { useAuth } from "../../lib/auth";
 import { usePermissions } from "../../lib/permissions";
 import { useNotifications } from "../../lib/notifications";
+import { searchAndRank } from "../../lib/search";
 import { Icon } from "../ui/Icon";
 import { NotificationBadge } from "../ui/NotificationBadge";
 
@@ -78,27 +79,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile, canViewTab, canViewSector]);
 
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return items.slice(0, 8);
-
-    function rank(item: PaletteItem): number {
-      const label = item.label.toLowerCase();
-      if (label === q) return 0;
-      if (label.startsWith(q)) return 1;
-      if (label.includes(q)) return 2;
-      if (item.breadcrumb.toLowerCase().includes(q)) return 3;
-      if (item.searchText.toLowerCase().includes(q)) return 4;
-      return -1;
-    }
-
-    return items
-      .map((item) => ({ item, rank: rank(item) }))
-      .filter((r) => r.rank >= 0)
-      .sort((a, b) => a.rank - b.rank)
-      .slice(0, 20)
-      .map((r) => r.item);
-  }, [items, query]);
+  const results = useMemo(() => searchAndRank(items, query, query ? 20 : 8), [items, query]);
 
   useEffect(() => {
     if (open) {
