@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../lib/auth";
-import { SOCIOS } from "../../data/socios";
+import { ALL_PROFILES } from "../../data/socios";
 import { Icon } from "../ui/Icon";
 
 type Crumb = { label: string; to?: string };
@@ -71,7 +71,7 @@ export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: 
                 <p className="px-2 pb-1 pt-1 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
                   Previsualizar como
                 </p>
-                {SOCIOS.map((s) => (
+                {ALL_PROFILES.map((s) => (
                   <button
                     key={s.id}
                     onClick={() => {

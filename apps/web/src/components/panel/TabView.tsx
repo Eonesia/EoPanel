@@ -2,9 +2,14 @@ import { useNavigate } from "react-router-dom";
 import type { Tab } from "../../data/types";
 import { SectorCard } from "./SectorCard";
 import { Icon } from "../ui/Icon";
+import { useAuth } from "../../lib/auth";
+import { usePermissions } from "../../lib/permissions";
 
 export function TabView({ tab }: { tab: Tab }) {
   const navigate = useNavigate();
+  const { profile } = useAuth();
+  const { canViewSector } = usePermissions();
+  const visibleSectors = tab.sectors.filter((s) => canViewSector(profile, tab.id, s.id));
 
   if (!tab.available) {
     return (
@@ -40,7 +45,7 @@ export function TabView({ tab }: { tab: Tab }) {
         <p className="mt-1 text-sm text-ink-soft">Selecciona un sector para ver su detalle y accesos directos.</p>
       </header>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {tab.sectors.map((sector, i) => (
+        {visibleSectors.map((sector, i) => (
           <SectorCard
             key={sector.id}
             tabId={tab.id}
@@ -50,6 +55,12 @@ export function TabView({ tab }: { tab: Tab }) {
           />
         ))}
       </div>
+      {visibleSectors.length === 0 && (
+        <div className="surface-card flex flex-col items-center gap-2 px-6 py-14 text-center">
+          <Icon name="ti-lock" className="text-2xl text-ink-faint" />
+          <p className="text-sm text-ink-soft">No tienes acceso a ningún sector de esta pestaña todavía.</p>
+        </div>
+      )}
     </div>
   );
 }

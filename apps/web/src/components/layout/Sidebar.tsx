@@ -3,13 +3,18 @@ import { TABS } from "../../data/tabs";
 import { Icon } from "../ui/Icon";
 import { NotificationBadge } from "../ui/NotificationBadge";
 import { useNotifications } from "../../lib/notifications";
+import { useAuth } from "../../lib/auth";
+import { usePermissions } from "../../lib/permissions";
 
 export function Sidebar({ className = "" }: { className?: string }) {
   const { tabCount } = useNotifications();
+  const { profile } = useAuth();
+  const { canViewTab } = usePermissions();
+  const visibleTabs = TABS.filter((tab) => canViewTab(profile, tab.id));
 
   return (
     <nav className={`flex flex-col gap-1 ${className}`} aria-label="Pestañas del panel">
-      {TABS.map((tab) => (
+      {visibleTabs.map((tab) => (
         <NavLink
           key={tab.id}
           to={`/panel/${tab.id}`}
@@ -39,6 +44,28 @@ export function Sidebar({ className = "" }: { className?: string }) {
           )}
         </NavLink>
       ))}
+
+      {profile?.role === "socio" && (
+        <>
+          <div className="my-2 border-t border-border" />
+          <NavLink
+            to="/panel/admin/permisos"
+            className={({ isActive }) =>
+              [
+                "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                isActive ? "bg-ink text-ink-inverse" : "text-ink-soft hover:bg-surface-2 hover:text-ink",
+              ].join(" ")
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <Icon name="ti-shield-lock" className={isActive ? "text-white" : "text-brand-500"} />
+                <span className="flex-1 truncate">Permisos</span>
+              </>
+            )}
+          </NavLink>
+        </>
+      )}
     </nav>
   );
 }

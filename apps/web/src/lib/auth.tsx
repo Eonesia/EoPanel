@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { supabase, isSupabaseConfigured } from "./supabaseClient";
-import { SOCIOS, type Profile } from "../data/socios";
+import { ALL_PROFILES, type Profile } from "../data/socios";
 
 const DEMO_STORAGE_KEY = "eopanel-demo-profile";
 
@@ -19,7 +19,7 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 function profileFromEmail(email: string): Profile {
-  const known = SOCIOS.find((s) => s.email.toLowerCase() === email.toLowerCase());
+  const known = ALL_PROFILES.find((s) => s.email.toLowerCase() === email.toLowerCase());
   if (known) return known;
   const name = email.split("@")[0];
   const initials = name.slice(0, 2).toUpperCase();
@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!isSupabaseConfigured || !supabase) {
       const stored = localStorage.getItem(DEMO_STORAGE_KEY);
       if (stored) {
-        const found = SOCIOS.find((s) => s.id === stored);
+        const found = ALL_PROFILES.find((s) => s.id === stored);
         if (found) {
           setProfile(found);
           setStatus("authed");
@@ -75,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       profile,
       isDemo: !isSupabaseConfigured,
       loginDemo: (profileId: string) => {
-        const found = SOCIOS.find((s) => s.id === profileId);
+        const found = ALL_PROFILES.find((s) => s.id === profileId);
         if (!found) return;
         localStorage.setItem(DEMO_STORAGE_KEY, profileId);
         setProfile(found);

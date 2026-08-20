@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/auth";
-import { SOCIOS } from "../data/socios";
+import { ALL_PROFILES } from "../data/socios";
 import { Icon } from "../components/ui/Icon";
 
 export function LoginPage() {
@@ -55,7 +55,7 @@ export function LoginPage() {
                 Modo demo — sin Supabase conectado. Elige tu perfil para entrar.
               </p>
               <div className="flex flex-col gap-2">
-                {SOCIOS.map((s, i) => (
+                {ALL_PROFILES.map((s, i) => (
                   <button
                     key={s.id}
                     onClick={() => loginDemo(s.id)}
@@ -67,7 +67,7 @@ export function LoginPage() {
                     </span>
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold text-ink">{s.name}</p>
-                      <p className="truncate text-xs text-ink-faint">{s.email}</p>
+                      <p className="truncate text-xs text-ink-faint">{s.title ?? s.email}</p>
                     </div>
                     <Icon name="ti-chevron-right" className="ml-auto text-ink-faint" />
                   </button>
