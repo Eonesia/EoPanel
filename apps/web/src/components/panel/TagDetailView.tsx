@@ -5,6 +5,9 @@ import { NotificationBadge } from "../ui/NotificationBadge";
 import { StatTile } from "../ui/StatTile";
 import { ListRows } from "../ui/ListRows";
 import { DataTable } from "../ui/DataTable";
+import { EmbedSlot } from "./EmbedSlot";
+import { ManualEntryForm } from "./ManualEntryForm";
+import { IntegrationStatus } from "./IntegrationStatus";
 import { useNotifications } from "../../lib/notifications";
 
 export function TagDetailView({ tabId, sector, tag }: { tabId: string; sector: Sector; tag: Tag }) {
@@ -56,12 +59,29 @@ export function TagDetailView({ tabId, sector, tag }: { tabId: string; sector: S
 
         {tag.detail.table && <DataTable columns={tag.detail.table.columns} rows={tag.detail.table.rows} />}
 
-        {!tag.detail.stats && !tag.detail.list && !tag.detail.table && (
-          <div className="surface-card flex flex-col items-center gap-2 px-6 py-12 text-center">
-            <Icon name="ti-plug-connected-x" className="text-2xl text-ink-faint" />
-            <p className="text-sm text-ink-soft">Esta fuente todavía no está conectada.</p>
-          </div>
+        {tag.detail.integration && (
+          <IntegrationStatus
+            provider={tag.detail.integration.provider}
+            status={tag.detail.integration.status}
+            note={tag.detail.integration.note}
+          />
         )}
+
+        {tag.detail.embed && <EmbedSlot tagId={tag.id} label={tag.detail.embed.label} description={tag.detail.embed.description} />}
+
+        {tag.detail.form && <ManualEntryForm tagId={tag.id} fields={tag.detail.form.fields} submitLabel={tag.detail.form.submitLabel} />}
+
+        {!tag.detail.stats &&
+          !tag.detail.list &&
+          !tag.detail.table &&
+          !tag.detail.embed &&
+          !tag.detail.form &&
+          !tag.detail.integration && (
+            <div className="surface-card flex flex-col items-center gap-2 px-6 py-12 text-center">
+              <Icon name="ti-plug-connected-x" className="text-2xl text-ink-faint" />
+              <p className="text-sm text-ink-soft">Esta fuente todavía no está conectada.</p>
+            </div>
+          )}
 
         {tag.detail.note && (
           <p className="flex items-start gap-2 rounded-xl border border-dashed border-border-strong bg-surface-2 px-4 py-3 text-xs text-ink-faint">

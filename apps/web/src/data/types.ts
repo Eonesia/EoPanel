@@ -13,12 +13,25 @@ export type ListItem = {
 
 export type TableRow = Record<string, string>;
 
+export type FormField = {
+  id: string;
+  label: string;
+  type: "text" | "number" | "date" | "url";
+  placeholder?: string;
+};
+
 export type TagDetail = {
   intro: string;
   stats?: StatTile[];
   list?: ListItem[];
   table?: { columns: string[]; rows: TableRow[] };
   note?: string;
+  /** Slot para contenido embebido (Drive/FTP/Trello/Miro) — el enlace se guarda localmente hasta que exista backend. */
+  embed?: { label: string; description: string };
+  /** Formulario de entrada manual (p.ej. RRSS sin API todavía) — las entradas se guardan localmente. */
+  form?: { fields: FormField[]; submitLabel?: string };
+  /** Estado de integración con una fuente externa real (Mail, Banco, LXP…). */
+  integration?: { provider: string; status: "conectado" | "pendiente" | "no_conectado"; note: string };
 };
 
 export type Tag = {

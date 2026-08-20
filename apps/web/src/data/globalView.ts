@@ -433,8 +433,12 @@ const mail: Sector = {
       notifications: 4,
       summary: "Bandeja general de contacto e información.",
       detail: {
-        intro: "Bandeja compartida de contacto general. La integración real requiere OAuth de Google (pendiente).",
-        note: "Mock de interfaz — se conectará vía Gmail API con OAuth de Google.",
+        intro: "Bandeja compartida de contacto general.",
+        integration: {
+          provider: "Gmail API (OAuth de Google)",
+          status: "pendiente",
+          note: "Backend listo en /api/integrations/gmail (ver apps/api) — falta client ID/secret de Google Cloud y autorizar la cuenta.",
+        },
       },
     }),
     tag({
@@ -445,7 +449,11 @@ const mail: Sector = {
       summary: "Bandeja técnica del equipo de desarrollo.",
       detail: {
         intro: "Bandeja compartida del equipo técnico.",
-        note: "Mock de interfaz — se conectará vía Gmail API con OAuth de Google.",
+        integration: {
+          provider: "Gmail API (OAuth de Google)",
+          status: "pendiente",
+          note: "Misma integración que info@ — se autoriza cuenta por cuenta desde el mismo flujo OAuth.",
+        },
       },
     }),
     tag({
@@ -456,7 +464,11 @@ const mail: Sector = {
       summary: "Cuenta corporativa general en Gmail.",
       detail: {
         intro: "Cuenta corporativa en Gmail Workspace.",
-        note: "Mock de interfaz — se conectará vía Gmail API con OAuth de Google.",
+        integration: {
+          provider: "Gmail API (OAuth de Google)",
+          status: "pendiente",
+          note: "Misma integración que info@ — se autoriza cuenta por cuenta desde el mismo flujo OAuth.",
+        },
       },
     }),
     tag({
@@ -465,7 +477,14 @@ const mail: Sector = {
       icon: "ti-user-circle",
       notifications: 3,
       summary: "Bandeja personal del socio.",
-      detail: { intro: "Bandeja personal — visible solo para el socio y administradores autorizados." },
+      detail: {
+        intro: "Bandeja personal — visible solo para el socio y administradores autorizados.",
+        integration: {
+          provider: "Gmail API (OAuth de Google)",
+          status: "no_conectado",
+          note: "Cada socio autoriza su propia cuenta personal individualmente desde aquí cuando lo decida.",
+        },
+      },
     }),
   ],
 };
