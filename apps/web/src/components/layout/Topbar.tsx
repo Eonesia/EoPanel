@@ -93,7 +93,7 @@ export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: 
             setOpen(false);
           }}
           className="btn btn-ghost relative !px-2.5"
-          aria-label="Notificaciones"
+          aria-label={totalUnread > 0 ? `Notificaciones, ${totalUnread} sin leer` : "Notificaciones"}
           aria-haspopup="true"
           aria-expanded={bellOpen}
         >

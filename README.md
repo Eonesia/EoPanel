@@ -9,7 +9,7 @@ Vista global, Producción, Métricas, Learning, Finanzas y Onboarding, cada una
 con sus sectores, páginas de tag, notificaciones agregadas y sistema de
 permisos granular por rol. Se suman una búsqueda global (⌘K), un centro de
 notificaciones, favoritos, un libro editable en Facturación ("Holded propio"),
-76 tests automatizados (61 web + 15 api) y CI en GitHub Actions. Todos los datos son de ejemplo
+77 tests automatizados (62 web + 15 api) y CI en GitHub Actions. Todos los datos son de ejemplo
 (empresa ficticia "Eonesia", activa desde junio de 2022 — ver
 `apps/web/src/data/company.ts`).
 
@@ -181,6 +181,10 @@ reales que no existen en este entorno. Variables documentadas en
 - [x] El buscador global (⌘K) sigue el patrón ARIA de combobox
       (`role="combobox"`/`listbox`/`option`, `aria-activedescendant`) — antes
       el resultado activo solo se distinguía visualmente.
+- [x] El botón de la campana incluye el nº de no leídas en su
+      `aria-label` — un `aria-label` estático ocultaba el contador visual a
+      lectores de pantalla (el `aria-label` sustituye a todo el contenido
+      descendiente al calcular el nombre accesible).
 - [ ] HTTPS en Hostinger — depende de la configuración del hosting final.
 - [ ] 2FA — Supabase lo soporta (TOTP); pendiente de activarlo en el proyecto
       real y añadir el flujo en el login cuando se decida.

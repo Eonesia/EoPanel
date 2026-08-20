@@ -34,13 +34,21 @@ beforeEach(() => {
 });
 
 describe("Topbar notification bell", () => {
+  it("includes the unread count in the bell's accessible name, not just visually on the badge", () => {
+    // aria-label overrides all descendant text for the accessible name computation —
+    // a static "Notificaciones" label would silently hide the badge count from screen readers.
+    renderTopbar();
+    expect(screen.getByRole("button", { name: `Notificaciones, ${totalUnread} sin leer` })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Notificaciones" })).not.toBeInTheDocument();
+  });
+
   it("shows the total unread count on the bell and lists every unread tag inside", async () => {
     const user = userEvent.setup();
     renderTopbar();
 
     expect(screen.getByText(String(totalUnread))).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Notificaciones" }));
+    await user.click(screen.getByRole("button", { name: `Notificaciones, ${totalUnread} sin leer` }));
     expect(screen.getByText(`${totalUnread} sin leer`)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Marcar todas" })).toBeInTheDocument();
   });
@@ -49,7 +57,7 @@ describe("Topbar notification bell", () => {
     const user = userEvent.setup();
     renderTopbar();
 
-    await user.click(screen.getByRole("button", { name: "Notificaciones" }));
+    await user.click(screen.getByRole("button", { name: `Notificaciones, ${totalUnread} sin leer` }));
     await user.click(screen.getByRole("button", { name: "Marcar todas" }));
 
     expect(screen.getByText("Todo al día")).toBeInTheDocument();
@@ -57,5 +65,7 @@ describe("Topbar notification bell", () => {
     expect(screen.queryByRole("button", { name: "Marcar todas" })).not.toBeInTheDocument();
     // the badge on the bell itself disappears too
     expect(screen.queryByText(String(totalUnread))).not.toBeInTheDocument();
+    // and its accessible name drops the count along with it
+    expect(screen.getByRole("button", { name: "Notificaciones" })).toBeInTheDocument();
   });
 });
