@@ -7,8 +7,11 @@ aprendizaje, finanzas y onboarding para los 4 socios y el equipo. Ver
 **Estado actual:** las 6 pestañas del MVP están construidas y navegables —
 Vista global, Producción, Métricas, Learning, Finanzas y Onboarding, cada una
 con sus sectores, páginas de tag, notificaciones agregadas y sistema de
-permisos granular por rol. Todos los datos son de ejemplo (empresa ficticia
-"Eonesia", activa desde junio de 2022 — ver `apps/web/src/data/company.ts`).
+permisos granular por rol. Se suman una búsqueda global (⌘K), un centro de
+notificaciones, favoritos, un libro editable en Facturación ("Holded propio"),
+27 tests automatizados y CI en GitHub Actions. Todos los datos son de ejemplo
+(empresa ficticia "Eonesia", activa desde junio de 2022 — ver
+`apps/web/src/data/company.ts`).
 
 ## Stack
 
@@ -27,7 +30,8 @@ apps/
   web/    → frontend (Vite + React)
   api/    → backend (Express)
 supabase/
-  schema.sql  → esquema SQL (perfiles, permisos, notificaciones, Finanzas)
+  schema.sql  → esquema SQL (perfiles, permisos, notificaciones, Finanzas,
+                facturas, RRSS, embeds, favoritos)
   README.md   → cómo aplicarlo
 docs/
   spec.md → especificación funcional original
@@ -42,6 +46,16 @@ npm install          # instala todo el monorepo (workspaces)
 npm run dev:web       # http://localhost:5173
 npm run dev:api       # http://localhost:4000 (opcional en esta fase, ver abajo)
 ```
+
+### Calidad
+
+```bash
+npm run test --workspace apps/web    # Vitest — 27 tests (notificaciones, permisos, búsqueda, auth, ErrorBoundary)
+npm run lint --workspace apps/web    # oxlint
+npm run build                        # build de producción de web + api
+```
+
+Los tres corren en CI (`.github/workflows/ci.yml`) en cada push y PR.
 
 ### Variables de entorno
 
@@ -77,9 +91,15 @@ permisos se guardan en `localStorage`; el esquema `tab_permissions` en
 - **UI, navegación de 3 niveles (pestaña → sector → tag), notificaciones y
   permisos por rol**: reales y funcionales, con datos de ejemplo
   (`apps/web/src/data/*.ts`, uno por pestaña).
-- **Auth**: integración real con Supabase Auth (email/contraseña) lista en el
-  código; falta que apuntes el proyecto Supabase real vía variables de entorno
-  y que actives el proveedor de email en el dashboard (ver `supabase/README.md`).
+- **Búsqueda global (⌘K), centro de notificaciones y favoritos**: reales,
+  respetan los permisos del rol activo, persistidos en `localStorage`.
+- **Auth**: integración real con Supabase Auth (email/contraseña + recuperar
+  contraseña) lista en el código; falta que apuntes el proyecto Supabase real
+  vía variables de entorno y que actives el proveedor de email en el
+  dashboard (ver `supabase/README.md`).
+- **Facturación** (Finanzas > Facturación > Facturas): libro editable de
+  verdad — añade y elimina facturas desde el panel ("Holded propio", spec §8),
+  guardado en `localStorage` hasta que se conecte la tabla `invoices`.
 - **Backend Express**: `/api/health`, `/api/notifications/summary` (mock),
   `/api/auth/session` (valida un token de Supabase si está configurado) y
   `/api/integrations/*` (ver siguiente sección). El frontend **todavía no

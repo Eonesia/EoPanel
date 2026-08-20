@@ -17,10 +17,20 @@
 
 ## Estado del esquema
 
-Este es un borrador cubriendo lo necesario para el MVP (perfiles, permisos
-granulares por pestaña/sector, notificaciones y Finanzas). Tablas para el resto
-de secciones (RRSS manual, Biblioteca embebida, Facturación/Contabilidad,
-espejo o conexión con LXP) se añadirán cuando se construya cada pestaña —
+Cubre perfiles, permisos granulares por pestaña/sector, notificaciones,
+Finanzas (previsión + deuda bancaria), y la contrapartida en base de datos de
+cada función que hoy vive en `localStorage` en el frontend:
+
+| Tabla | Sustituye a (frontend) |
+|---|---|
+| `invoices` | `EditableLedger` — Facturación > Facturas ("Holded propio") |
+| `social_metrics` | `ManualEntryForm` — Métricas > RRSS |
+| `embeds` | `EmbedSlot` — Biblioteca (Drive/FTPs/Trello/Miro) |
+| `favorites` | `lib/favorites.tsx` |
+
+Migrar cada una es un intercambio de `useLocalStorage` por llamadas a
+`supabase-js` en el componente correspondiente — el resto de la UI no cambia.
+LXP se modelará cuando se decida el mecanismo de conexión con AWS (spec §9);
 de momento el frontend funciona con datos de ejemplo y no depende de Supabase
 para su contenido.
 

@@ -1,12 +1,14 @@
 -- Panel Eonesia — esquema inicial de Supabase (borrador)
 --
 -- Cubre: perfiles de usuario, sistema de permisos granular (pestaña/sector),
--- notificaciones y su estado de lectura por usuario, y las tablas de Finanzas
--- (previsión y deuda bancaria) que ya se describen en el spec del MVP.
+-- notificaciones y su estado de lectura por usuario, las tablas de Finanzas
+-- (previsión y deuda bancaria), favoritos, el libro editable de Facturación
+-- ("Holded propio"), métricas manuales de RRSS y los enlaces embebidos de
+-- Biblioteca — es decir, la contrapartida en base de datos de todo lo que hoy
+-- vive en localStorage en el frontend (ver apps/web/src/lib/*.tsx).
 --
--- El resto de fuentes (RRSS manual, Biblioteca embebida, Facturación/Contabilidad,
--- LXP) se modelarán cuando esas secciones se construyan; de momento el frontend
--- usa datos mock y no depende de estas tablas.
+-- LXP se modelará cuando se decida el mecanismo de conexión con AWS
+-- (spec §9); de momento el frontend usa datos mock y no depende de estas tablas.
 
 -- ============================================================
 -- Perfiles
@@ -134,32 +136,121 @@ create table public.bank_debts (
 alter table public.forecast_entries enable row level security;
 alter table public.bank_debts enable row level security;
 
-create policy "forecast_entries_socios_only" on public.forecast_entries
-  for all using (
+-- Reutilizada por todas las tablas restringidas a Finanzas (evita repetir el
+-- mismo exists()/join en cada policy — ver invoices más abajo, que la usa también).
+create function public.has_tab_access(check_tab_id text)
+returns boolean
+language sql
+security definer
+stable
+as $$
+  select
     exists (select 1 from public.profiles where id = auth.uid() and role = 'socio')
     or exists (
       select 1 from public.tab_permissions p
       join public.profiles pr on pr.id = auth.uid()
-      where p.tab_id = 'finanzas'
+      where p.tab_id = check_tab_id
         and p.can_view
         and (
           (p.subject_type = 'role' and p.subject_role = pr.role) or
           (p.subject_type = 'user' and p.subject_user_id = auth.uid())
         )
-    )
-  );
+    );
+$$;
 
-create policy "bank_debts_socios_only" on public.bank_debts
-  for all using (
-    exists (select 1 from public.profiles where id = auth.uid() and role = 'socio')
-    or exists (
-      select 1 from public.tab_permissions p
-      join public.profiles pr on pr.id = auth.uid()
-      where p.tab_id = 'finanzas'
-        and p.can_view
-        and (
-          (p.subject_type = 'role' and p.subject_role = pr.role) or
-          (p.subject_type = 'user' and p.subject_user_id = auth.uid())
-        )
-    )
-  );
+create policy "forecast_entries_finanzas_access" on public.forecast_entries
+  for all using (public.has_tab_access('finanzas'));
+
+create policy "bank_debts_finanzas_access" on public.bank_debts
+  for all using (public.has_tab_access('finanzas'));
+
+-- ============================================================
+-- Facturación — "Holded propio" (libro editable de facturas)
+-- ============================================================
+-- Contrapartida de apps/web/src/components/panel/EditableLedger.tsx,
+-- usado hoy por Finanzas > Facturación > Facturas con almacenamiento local.
+
+create table public.invoices (
+  id uuid primary key default gen_random_uuid(),
+  numero text not null,
+  cliente text not null,
+  categoria text,
+  importe numeric(12, 2) not null,
+  estado text not null default 'Pendiente' check (estado in ('Pendiente', 'Cobrada', 'Anulada')),
+  created_by uuid references auth.users (id),
+  created_at timestamptz not null default now()
+);
+
+alter table public.invoices enable row level security;
+
+create policy "invoices_finanzas_access" on public.invoices
+  for all using (public.has_tab_access('finanzas'));
+
+-- ============================================================
+-- RRSS — métricas manuales
+-- ============================================================
+-- Contrapartida de ManualEntryForm en Métricas > RRSS. Cuando se conecten las
+-- APIs de cada plataforma (ver apps/api/.env.example), esta tabla pasa de
+-- alimentarse a mano a alimentarse por un job programado, sin cambiar el
+-- resto del modelo.
+
+create table public.social_metrics (
+  id uuid primary key default gen_random_uuid(),
+  platform text not null check (platform in ('web', 'linkedin', 'instagram', 'facebook', 'tiktok')),
+  metric_date date not null,
+  followers integer,
+  interactions integer,
+  visits integer,
+  entered_by uuid references auth.users (id),
+  created_at timestamptz not null default now()
+);
+
+alter table public.social_metrics enable row level security;
+
+create policy "social_metrics_select_authenticated" on public.social_metrics
+  for select using (auth.role() = 'authenticated');
+
+create policy "social_metrics_insert_authenticated" on public.social_metrics
+  for insert with check (auth.role() = 'authenticated');
+
+-- ============================================================
+-- Biblioteca — enlaces embebidos
+-- ============================================================
+-- Contrapartida de EmbedSlot.tsx (Drive/FTPs/Trello/Miro y cualquier otro tag
+-- con slot de embed). Un registro por tag_id — conectar/desconectar es un
+-- upsert/delete, igual que hoy en localStorage.
+
+create table public.embeds (
+  tag_id text primary key,
+  url text not null,
+  connected_by uuid references auth.users (id),
+  connected_at timestamptz not null default now()
+);
+
+alter table public.embeds enable row level security;
+
+create policy "embeds_select_authenticated" on public.embeds
+  for select using (auth.role() = 'authenticated');
+
+create policy "embeds_manage_authenticated" on public.embeds
+  for all using (auth.role() = 'authenticated');
+
+-- ============================================================
+-- Favoritos
+-- ============================================================
+-- Contrapartida de lib/favorites.tsx — personal de cada usuario, no
+-- compartido entre perfiles.
+
+create table public.favorites (
+  user_id uuid not null references auth.users (id) on delete cascade,
+  tab_id text not null,
+  sector_id text not null,
+  tag_id text not null,
+  created_at timestamptz not null default now(),
+  primary key (user_id, tab_id, sector_id, tag_id)
+);
+
+alter table public.favorites enable row level security;
+
+create policy "favorites_own_only" on public.favorites
+  for all using (auth.uid() = user_id);
