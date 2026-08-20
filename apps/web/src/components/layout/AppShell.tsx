@@ -64,7 +64,7 @@ export function AppShell({ crumbs, children }: { crumbs: Crumb[]; children: Reac
                 Datos de ejemplo
               </span>
             </div>
-            <Sidebar />
+            <Sidebar onNavigate={() => setDrawerOpen(false)} />
           </aside>
         </div>
       )}

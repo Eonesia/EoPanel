@@ -7,7 +7,7 @@ import { useAuth } from "../../lib/auth";
 import { usePermissions } from "../../lib/permissions";
 import { useFavorites } from "../../lib/favorites";
 
-export function Sidebar({ className = "" }: { className?: string }) {
+export function Sidebar({ className = "", onNavigate }: { className?: string; onNavigate?: () => void }) {
   const { tabCount, tagCount } = useNotifications();
   const { profile } = useAuth();
   const { canViewTab, canViewSector } = usePermissions();
@@ -23,6 +23,7 @@ export function Sidebar({ className = "" }: { className?: string }) {
         <NavLink
           key={tab.id}
           to={`/panel/${tab.id}`}
+          onClick={onNavigate}
           className={({ isActive }) =>
             [
               "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
@@ -59,6 +60,7 @@ export function Sidebar({ className = "" }: { className?: string }) {
             <NavLink
               key={f.key}
               to={`/panel/${f.tabId}/${f.sectorId}/${f.tagId}`}
+              onClick={onNavigate}
               className={({ isActive }) =>
                 [
                   "group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200",
@@ -86,6 +88,7 @@ export function Sidebar({ className = "" }: { className?: string }) {
           <div className="my-2 border-t border-border" />
           <NavLink
             to="/panel/admin/permisos"
+            onClick={onNavigate}
             className={({ isActive }) =>
               [
                 "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
