@@ -9,9 +9,9 @@ Vista global, Producción, Métricas, Learning, Finanzas y Onboarding, cada una
 con sus sectores, páginas de tag, notificaciones agregadas y sistema de
 permisos granular por rol. Se suman una búsqueda global (⌘K), un centro de
 notificaciones, favoritos, un libro editable en Facturación ("Holded propio"),
-81 tests automatizados (66 web + 15 api) y CI en GitHub Actions. Todos los datos son de ejemplo
-(empresa ficticia "Eonesia", activa desde junio de 2022 — ver
-`apps/web/src/data/company.ts`).
+verificación en dos pasos (TOTP), 101 tests automatizados (86 web + 15 api) y
+CI en GitHub Actions. Todos los datos son de ejemplo (empresa ficticia
+"Eonesia", activa desde junio de 2022 — ver `apps/web/src/data/company.ts`).
 
 ## Stack
 
@@ -50,7 +50,7 @@ npm run dev:api       # http://localhost:4000 (opcional en esta fase, ver abajo)
 ### Calidad
 
 ```bash
-npm run test --workspace apps/web    # Vitest — 60 tests (notificaciones + marcar todas, permisos + excepciones por persona, búsqueda, auth, ErrorBoundary, embeds, entrada manual, ledger + totales, campana de notificaciones, integración TagDetailView)
+npm run test --workspace apps/web    # Vitest — 86 tests (notificaciones, permisos, búsqueda, auth + 2FA, ErrorBoundary, embeds, entrada manual, ledger, componentes de layout)
 npm run test --workspace apps/api    # Vitest + supertest — 15 tests (rutas, integraciones + escape XSS, CORS, 404, cabeceras de seguridad)
 npm run lint --workspace apps/web    # oxlint
 npm run build                        # build de producción de web + api
@@ -115,9 +115,9 @@ esta fase los permisos se guardan en `localStorage`; el esquema
 - **Búsqueda global (⌘K), centro de notificaciones y favoritos**: reales,
   respetan los permisos del rol activo, persistidos en `localStorage`.
 - **Auth**: integración real con Supabase Auth (email/contraseña + recuperar
-  contraseña) lista en el código; falta que apuntes el proyecto Supabase real
-  vía variables de entorno y que actives el proveedor de email en el
-  dashboard (ver `supabase/README.md`).
+  contraseña + verificación en dos pasos TOTP) lista en el código; falta que
+  apuntes el proyecto Supabase real vía variables de entorno y que actives el
+  proveedor de email en el dashboard (ver `supabase/README.md`).
 - **Facturación** (Finanzas > Facturación > Facturas): libro editable de
   verdad — añade y elimina facturas desde el panel ("Holded propio", spec §8),
   con un total en el pie de la tabla que se recalcula al vuelo (parseo de
@@ -209,8 +209,15 @@ reales que no existen en este entorno. Variables documentadas en
       solo estar autenticado, igual que Finanzas. Verificado aplicando el
       script completo contra un Postgres real (no solo revisado a ojo).
 - [ ] HTTPS en Hostinger — depende de la configuración del hosting final.
-- [ ] 2FA — Supabase lo soporta (TOTP); pendiente de activarlo en el proyecto
-      real y añadir el flujo en el login cuando se decida.
+- [x] 2FA (TOTP) — flujo completo contra `supabase.auth.mfa.*` real: alta con
+      QR + secreto desde **Seguridad** (menú de la cuenta), reto de 6 dígitos
+      en el login cuando la cuenta lo tiene activado (el estado
+      `mfa_challenge` bloquea el acceso al panel hasta verificarlo — una
+      sesión válida por contraseña se queda en AAL1, no cuenta como
+      autenticada), y baja. En modo demo se explica que hace falta un
+      proyecto Supabase real para probarlo — no se puede activar de verdad
+      sin credenciales, pero el código y sus 20 tests (mockeando el cliente)
+      están listos para cuando se conecte.
 
 ## Despliegue (pendiente, notas para cuando haya credenciales)
 

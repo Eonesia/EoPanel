@@ -218,6 +218,20 @@ export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: 
               </div>
             )}
 
+            <div className="border-b border-border p-2">
+              <button
+                role="menuitem"
+                onClick={() => {
+                  setOpen(false);
+                  navigate("/panel/seguridad");
+                }}
+                className="flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left text-sm text-ink-soft transition-colors hover:bg-surface-2 hover:text-ink"
+              >
+                <Icon name="ti-shield-lock" className="text-ink-faint" />
+                Seguridad
+              </button>
+            </div>
+
             <button
               role="menuitem"
               onClick={() => {

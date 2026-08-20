@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Topbar } from "./Topbar";
 import { NotificationsProvider } from "../../lib/notifications";
@@ -15,10 +15,16 @@ vi.mock("../../lib/auth", () => ({
 
 function renderTopbar() {
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={["/panel/global"]}>
       <NotificationsProvider>
         <PermissionsProvider>
-          <Topbar crumbs={[{ label: "Vista global" }]} onMenuClick={() => {}} />
+          <Routes>
+            <Route
+              path="/panel/global"
+              element={<Topbar crumbs={[{ label: "Vista global" }]} onMenuClick={() => {}} />}
+            />
+            <Route path="/panel/seguridad" element={<p>Página de seguridad</p>} />
+          </Routes>
         </PermissionsProvider>
       </NotificationsProvider>
     </MemoryRouter>,
@@ -67,5 +73,17 @@ describe("Topbar notification bell", () => {
     expect(screen.queryByText(String(totalUnread))).not.toBeInTheDocument();
     // and its accessible name drops the count along with it
     expect(screen.getByRole("button", { name: "Notificaciones" })).toBeInTheDocument();
+  });
+});
+
+describe("Topbar account menu", () => {
+  it("navigates to the security page from the profile dropdown", async () => {
+    const user = userEvent.setup();
+    renderTopbar();
+
+    await user.click(screen.getByRole("button", { name: /Cuenta de/ }));
+    await user.click(screen.getByRole("menuitem", { name: "Seguridad" }));
+
+    expect(await screen.findByText("Página de seguridad")).toBeInTheDocument();
   });
 });

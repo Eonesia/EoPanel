@@ -7,6 +7,7 @@ import { FavoritesProvider } from "./lib/favorites";
 import { LoginPage } from "./pages/LoginPage";
 import { PanelPage } from "./pages/PanelPage";
 import { PermissionsAdminPage } from "./pages/PermissionsAdminPage";
+import { SecurityPage } from "./pages/SecurityPage";
 
 export default function App() {
   return (
@@ -23,6 +24,14 @@ export default function App() {
                     element={
                       <RequireAuth>
                         <PermissionsAdminPage />
+                      </RequireAuth>
+                    }
+                  />
+                  <Route
+                    path="/panel/seguridad"
+                    element={
+                      <RequireAuth>
+                        <SecurityPage />
                       </RequireAuth>
                     }
                   />

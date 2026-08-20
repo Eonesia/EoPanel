@@ -6,12 +6,13 @@ import { ALL_PROFILES } from "../data/socios";
 import { Icon } from "../components/ui/Icon";
 
 export function LoginPage() {
-  const { status, isDemo, loginDemo, loginWithPassword, resetPassword } = useAuth();
+  const { status, isDemo, loginDemo, loginWithPassword, resetPassword, verifyMfaChallenge } = useAuth();
   const { showToast } = useToast();
   const location = useLocation();
   const [view, setView] = useState<"login" | "reset">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [mfaCode, setMfaCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -27,6 +28,18 @@ export function LoginPage() {
     const res = await loginWithPassword(email, password);
     setLoading(false);
     if (res.error) setError(res.error);
+  }
+
+  async function handleMfaSubmit(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    const res = await verifyMfaChallenge(mfaCode);
+    setLoading(false);
+    if (res.error) {
+      setError(res.error);
+      setMfaCode("");
+    }
   }
 
   async function handleReset(e: FormEvent) {
@@ -66,7 +79,43 @@ export function LoginPage() {
         </div>
 
         <div className="surface-card p-6">
-          {isDemo ? (
+          {status === "mfa_challenge" ? (
+            <form onSubmit={handleMfaSubmit} className="flex flex-col gap-4">
+              <div className="flex flex-col items-center gap-2 text-center">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-lg text-brand-600">
+                  <Icon name="ti-shield-lock" />
+                </span>
+                <p className="text-sm font-semibold text-ink">Verificación en dos pasos</p>
+                <p className="text-xs text-ink-faint">Introduce el código de tu app de autenticación.</p>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="mfa-code" className="sr-only">
+                  Código de verificación
+                </label>
+                <input
+                  id="mfa-code"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  required
+                  autoFocus
+                  value={mfaCode}
+                  onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ""))}
+                  className="rounded-lg border border-border-strong bg-surface px-3 py-2.5 text-center text-lg tracking-[0.5em] text-ink outline-none transition-colors focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+                  placeholder="000000"
+                />
+              </div>
+              {error && (
+                <p role="alert" className="rounded-lg bg-danger-bg px-3 py-2 text-xs font-medium text-danger">
+                  {error}
+                </p>
+              )}
+              <button type="submit" disabled={loading || mfaCode.length !== 6} className="btn btn-primary w-full">
+                {loading ? "Verificando…" : "Verificar"}
+              </button>
+            </form>
+          ) : isDemo ? (
             <>
               <p className="mb-4 text-center text-xs font-medium text-ink-faint">
                 Modo demo — sin Supabase conectado. Elige tu perfil para entrar.

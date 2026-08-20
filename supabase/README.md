@@ -5,8 +5,12 @@
 1. Crea un proyecto en [supabase.com](https://supabase.com) (o usa el que ya tengas).
 2. En el SQL Editor del dashboard, pega y ejecuta el contenido de `schema.sql`.
 3. Activa el proveedor de **Email** en Authentication → Providers (email + contraseña).
-4. En Authentication → Settings, considera activar la confirmación de email y,
-   si se quiere reforzar la seguridad indicada en el spec, el 2FA (TOTP) por usuario.
+4. En Authentication → Settings, considera activar la confirmación de email.
+   El 2FA (TOTP) que pide el spec §2 ya está implementado en el frontend
+   (`apps/web/src/lib/auth.tsx`, página **Seguridad** en el menú de la
+   cuenta) contra `supabase.auth.mfa.*` — es una API del cliente, no requiere
+   activar nada aparte en el dashboard; cada persona lo activa desde su
+   propia cuenta cuando quiera.
 
 ## Variables de entorno
 
