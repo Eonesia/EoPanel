@@ -9,7 +9,7 @@ Vista global, Producción, Métricas, Learning, Finanzas y Onboarding, cada una
 con sus sectores, páginas de tag, notificaciones agregadas y sistema de
 permisos granular por rol. Se suman una búsqueda global (⌘K), un centro de
 notificaciones, favoritos, un libro editable en Facturación ("Holded propio"),
-verificación en dos pasos (TOTP), 104 tests automatizados (89 web + 15 api) y
+verificación en dos pasos (TOTP), 106 tests automatizados (91 web + 15 api) y
 CI en GitHub Actions. Todos los datos son de ejemplo (empresa ficticia
 "Eonesia", activa desde junio de 2022 — ver `apps/web/src/data/company.ts`).
 
@@ -122,7 +122,10 @@ esta fase los permisos se guardan en `localStorage`; el esquema
   verdad — añade y elimina facturas desde el panel ("Holded propio", spec §8),
   con un total en el pie de la tabla que se recalcula al vuelo (parseo de
   importes en formato español vía `apps/web/src/lib/currency.ts`), guardado
-  en `localStorage` hasta que se conecte la tabla `invoices`.
+  en `localStorage` hasta que se conecte la tabla `invoices`. El campo
+  "Estado" es un desplegable (no texto libre) con los mismos tres valores
+  que el `check` de `invoices.estado` en `supabase/schema.sql` — así un
+  error de tecleo no puede llegar a romper el insert el día que se conecte.
 - **Backend Express**: `/api/health`, `/api/notifications/summary` (mock),
   `/api/auth/session` (valida un token de Supabase si está configurado) y
   `/api/integrations/*` (ver siguiente sección). El frontend **todavía no

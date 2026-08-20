@@ -218,7 +218,9 @@ const facturacion: Sector = {
             { id: "Cliente", label: "Cliente", type: "text", placeholder: "Colegio Alameda" },
             { id: "Categoría", label: "Categoría", type: "text", placeholder: "Licencia LXP" },
             { id: "Importe", label: "Importe", type: "text", placeholder: "3.400 €" },
-            { id: "Estado", label: "Estado", type: "text", placeholder: "Pendiente" },
+            // Mismos valores que el CHECK de invoices.estado en supabase/schema.sql —
+            // un desplegable evita errores de tecleo que romperían el insert al conectar Supabase de verdad.
+            { id: "Estado", label: "Estado", type: "select", options: ["Pendiente", "Cobrada", "Anulada"] },
           ],
           seedRows: [
             { "Nº": "F-2026-041", Cliente: "Colegio Alameda", Categoría: "Licencia LXP", Importe: "3.400 €", Estado: "Cobrada" },

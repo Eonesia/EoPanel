@@ -46,3 +46,34 @@ describe("EditableLedger total footer", () => {
     expect(screen.queryByText("5.500 €")).not.toBeInTheDocument();
   });
 });
+
+describe("EditableLedger select fields", () => {
+  const FIELDS_WITH_SELECT: FormField[] = [
+    { id: "Nº", label: "Nº", type: "text" },
+    { id: "Estado", label: "Estado", type: "select", options: ["Pendiente", "Cobrada", "Anulada"] },
+  ];
+
+  it("renders a <select> with only the given options — not a free-text input", async () => {
+    const user = userEvent.setup();
+    render(<EditableLedger tagId="ledger-select" fields={FIELDS_WITH_SELECT} seedRows={[]} addLabel="Nueva fila" />);
+
+    await user.click(screen.getByRole("button", { name: "Nueva fila" }));
+
+    const select = screen.getByLabelText("Estado");
+    expect(select.tagName).toBe("SELECT");
+    const options = screen.getAllByRole("option").map((o) => (o as HTMLOptionElement).value);
+    expect(options).toEqual(["", "Pendiente", "Cobrada", "Anulada"]);
+  });
+
+  it("saves the row with whichever option was picked", async () => {
+    const user = userEvent.setup();
+    render(<EditableLedger tagId="ledger-select-2" fields={FIELDS_WITH_SELECT} seedRows={[]} addLabel="Nueva fila" />);
+
+    await user.click(screen.getByRole("button", { name: "Nueva fila" }));
+    await user.type(screen.getByLabelText("Nº"), "F-100");
+    await user.selectOptions(screen.getByLabelText("Estado"), "Cobrada");
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(screen.getByText("Cobrada")).toBeInTheDocument();
+  });
+});

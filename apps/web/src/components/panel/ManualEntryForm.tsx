@@ -49,23 +49,48 @@ export function ManualEntryForm({
               <label htmlFor={`${tagId}-${f.id}`} className="text-xs font-medium text-ink-soft">
                 {f.label}
               </label>
-              <input
-                id={`${tagId}-${f.id}`}
-                type={f.type}
-                placeholder={f.placeholder}
-                value={draft[f.id] ?? ""}
-                onChange={(e) => {
-                  setDraft((d) => ({ ...d, [f.id]: e.target.value }));
-                  if (missing.has(f.id)) setMissing((prev) => new Set([...prev].filter((id) => id !== f.id)));
-                }}
-                aria-invalid={missing.has(f.id)}
-                aria-describedby={missing.has(f.id) ? `${tagId}-${f.id}-error` : undefined}
-                className={`rounded-lg border bg-surface px-3 py-2 text-sm text-ink outline-none transition-colors focus:ring-2 ${
-                  missing.has(f.id)
-                    ? "border-danger focus:border-danger focus:ring-danger/10"
-                    : "border-border-strong focus:border-brand-400 focus:ring-brand-100"
-                }`}
-              />
+              {f.type === "select" ? (
+                <select
+                  id={`${tagId}-${f.id}`}
+                  value={draft[f.id] ?? ""}
+                  onChange={(e) => {
+                    setDraft((d) => ({ ...d, [f.id]: e.target.value }));
+                    if (missing.has(f.id)) setMissing((prev) => new Set([...prev].filter((id) => id !== f.id)));
+                  }}
+                  aria-invalid={missing.has(f.id)}
+                  aria-describedby={missing.has(f.id) ? `${tagId}-${f.id}-error` : undefined}
+                  className={`rounded-lg border bg-surface px-3 py-2 text-sm text-ink outline-none transition-colors focus:ring-2 ${
+                    missing.has(f.id)
+                      ? "border-danger focus:border-danger focus:ring-danger/10"
+                      : "border-border-strong focus:border-brand-400 focus:ring-brand-100"
+                  }`}
+                >
+                  <option value="">Selecciona…</option>
+                  {f.options?.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  id={`${tagId}-${f.id}`}
+                  type={f.type}
+                  placeholder={f.placeholder}
+                  value={draft[f.id] ?? ""}
+                  onChange={(e) => {
+                    setDraft((d) => ({ ...d, [f.id]: e.target.value }));
+                    if (missing.has(f.id)) setMissing((prev) => new Set([...prev].filter((id) => id !== f.id)));
+                  }}
+                  aria-invalid={missing.has(f.id)}
+                  aria-describedby={missing.has(f.id) ? `${tagId}-${f.id}-error` : undefined}
+                  className={`rounded-lg border bg-surface px-3 py-2 text-sm text-ink outline-none transition-colors focus:ring-2 ${
+                    missing.has(f.id)
+                      ? "border-danger focus:border-danger focus:ring-danger/10"
+                      : "border-border-strong focus:border-brand-400 focus:ring-brand-100"
+                  }`}
+                />
+              )}
               {missing.has(f.id) && (
                 <p id={`${tagId}-${f.id}-error`} role="alert" className="text-[11px] font-medium text-danger">
                   Este campo es obligatorio

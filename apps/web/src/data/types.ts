@@ -16,8 +16,10 @@ export type TableRow = Record<string, string>;
 export type FormField = {
   id: string;
   label: string;
-  type: "text" | "number" | "date" | "url";
+  type: "text" | "number" | "date" | "url" | "select";
   placeholder?: string;
+  /** Requerido cuando type === "select" — limita la entrada a valores válidos (p.ej. los de un CHECK en Supabase). */
+  options?: string[];
 };
 
 export type TagDetail = {
