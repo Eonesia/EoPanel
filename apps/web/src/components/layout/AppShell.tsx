@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Icon } from "../ui/Icon";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
@@ -7,6 +7,15 @@ type Crumb = { label: string; to?: string };
 
 export function AppShell({ crumbs, children }: { crumbs: Crumb[]; children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setDrawerOpen(false);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [drawerOpen]);
 
   return (
     <div className="flex min-h-screen">
@@ -32,7 +41,12 @@ export function AppShell({ crumbs, children }: { crumbs: Crumb[]; children: Reac
       {drawerOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div className="absolute inset-0 bg-ink/40 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
-          <aside className="fade-in-up absolute left-0 top-0 h-full w-72 bg-surface px-3 py-5 shadow-pop">
+          <aside
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menú de navegación"
+            className="fade-in-up absolute left-0 top-0 h-full w-72 bg-surface px-3 py-5 shadow-pop"
+          >
             <div className="mb-6 flex items-center justify-between px-2">
               <div className="flex items-center gap-2.5">
                 <span className="brand-gradient flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white">

@@ -49,7 +49,11 @@ export function PermissionsAdminPage() {
                     <div key={role.id} className="rounded-xl border border-border bg-surface-2 p-3.5">
                       <div className="mb-2.5 flex items-center justify-between">
                         <span className="text-xs font-semibold uppercase tracking-wide text-ink-faint">{role.label}</span>
-                        <Switch checked={enabled} onChange={(v) => setTabEnabled(role.id, tab.id, v)} />
+                        <Switch
+                          checked={enabled}
+                          onChange={(v) => setTabEnabled(role.id, tab.id, v)}
+                          ariaLabel={`${role.label}: acceso a ${tab.label}`}
+                        />
                       </div>
                       {enabled && tab.sectors.length > 0 && (
                         <div className="flex flex-col gap-1.5 border-t border-border pt-2.5">

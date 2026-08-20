@@ -121,6 +121,9 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
     <div className="fixed inset-0 z-[90] flex items-start justify-center px-4 pt-[12vh]">
       <div className="fade-in-up absolute inset-0 bg-ink/40 backdrop-blur-sm" onClick={onClose} />
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Buscar en el panel"
         className="fade-in-up relative w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-surface shadow-pop"
         style={{ boxShadow: "var(--shadow-pop)" }}
         onKeyDown={onKeyDown}

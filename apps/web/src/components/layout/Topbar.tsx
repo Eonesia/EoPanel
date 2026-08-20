@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../lib/auth";
 import { useNotifications } from "../../lib/notifications";
 import { usePermissions } from "../../lib/permissions";
+import { useClickOutside } from "../../lib/useClickOutside";
 import { ALL_PROFILES } from "../../data/socios";
 import { Icon } from "../ui/Icon";
 import { NotificationBadge } from "../ui/NotificationBadge";
@@ -18,6 +19,11 @@ export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: 
   const [bellOpen, setBellOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const navigate = useNavigate();
+  const bellRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(bellRef, bellOpen, () => setBellOpen(false));
+  useClickOutside(profileRef, open, () => setOpen(false));
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -80,7 +86,7 @@ export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: 
         <Icon name="ti-search" />
       </button>
 
-      <div className="relative shrink-0">
+      <div className="relative shrink-0" ref={bellRef}>
         <button
           onClick={() => {
             setBellOpen((v) => !v);
@@ -88,6 +94,8 @@ export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: 
           }}
           className="btn btn-ghost relative !px-2.5"
           aria-label="Notificaciones"
+          aria-haspopup="true"
+          aria-expanded={bellOpen}
         >
           <Icon name="ti-bell" className="text-lg" />
           {totalUnread > 0 && (
@@ -99,6 +107,8 @@ export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: 
 
         {bellOpen && (
           <div
+            role="menu"
+            aria-label="Notificaciones"
             className="fade-in-up absolute right-0 top-[calc(100%+8px)] w-80 overflow-hidden rounded-2xl border border-border bg-surface shadow-pop"
             style={{ boxShadow: "var(--shadow-pop)" }}
           >
@@ -113,6 +123,7 @@ export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: 
                 unread.map((item) => (
                   <button
                     key={item.tagId}
+                    role="menuitem"
                     onClick={() => {
                       markTagRead(item.tagId);
                       setBellOpen(false);
@@ -138,13 +149,16 @@ export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: 
         )}
       </div>
 
-      <div className="relative shrink-0">
+      <div className="relative shrink-0" ref={profileRef}>
         <button
           onClick={() => {
             setOpen((v) => !v);
             setBellOpen(false);
           }}
           className="flex items-center gap-2 rounded-full border border-border bg-surface py-1 pl-1 pr-3 transition-all hover:border-brand-100 hover:shadow-[0_4px_14px_-6px_rgba(91,69,240,0.35)]"
+          aria-label={`Cuenta de ${profile?.name ?? "usuario"}`}
+          aria-haspopup="true"
+          aria-expanded={open}
         >
           <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-[11px] font-semibold text-white">
             {profile?.initials}
@@ -155,6 +169,8 @@ export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: 
 
         {open && (
           <div
+            role="menu"
+            aria-label="Menú de cuenta"
             className="fade-in-up absolute right-0 top-[calc(100%+8px)] w-64 overflow-hidden rounded-2xl border border-border bg-surface shadow-pop"
             style={{ boxShadow: "var(--shadow-pop)" }}
           >
@@ -176,6 +192,7 @@ export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: 
                 {ALL_PROFILES.map((s) => (
                   <button
                     key={s.id}
+                    role="menuitem"
                     onClick={() => {
                       loginDemo(s.id);
                       setOpen(false);
@@ -192,6 +209,7 @@ export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: 
             )}
 
             <button
+              role="menuitem"
               onClick={() => {
                 setOpen(false);
                 logout();
