@@ -11,11 +11,20 @@ export function AppShell({ crumbs, children }: { crumbs: Crumb[]; children: Reac
   return (
     <div className="flex min-h-screen">
       <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-surface/60 px-3 py-5 md:flex">
-        <div className="mb-6 flex items-center gap-2.5 px-2">
+        <div className="mb-1.5 flex items-center gap-2.5 px-2">
           <span className="brand-gradient flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white shadow-[0_6px_16px_-6px_rgba(91,69,240,0.6)]">
             E
           </span>
           <span className="font-display text-[15px] font-bold text-ink">Panel Eonesia</span>
+        </div>
+        <div className="mb-5 px-2">
+          <span
+            className="inline-flex items-center gap-1 rounded-full bg-warning-bg px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-warning"
+            title="Todos los datos de este panel son ficticios — aún no hay fuentes reales conectadas."
+          >
+            <Icon name="ti-flask" className="text-[11px]" />
+            Datos de ejemplo
+          </span>
         </div>
         <Sidebar />
       </aside>
@@ -34,6 +43,12 @@ export function AppShell({ crumbs, children }: { crumbs: Crumb[]; children: Reac
               <button onClick={() => setDrawerOpen(false)} className="btn btn-ghost !px-2" aria-label="Cerrar menú">
                 <Icon name="ti-x" />
               </button>
+            </div>
+            <div className="mb-5 px-2">
+              <span className="inline-flex items-center gap-1 rounded-full bg-warning-bg px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-warning">
+                <Icon name="ti-flask" className="text-[11px]" />
+                Datos de ejemplo
+              </span>
             </div>
             <Sidebar />
           </aside>

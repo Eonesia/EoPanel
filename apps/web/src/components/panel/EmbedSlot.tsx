@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Icon } from "../ui/Icon";
 import { useLocalStorage } from "../../lib/useLocalStorage";
+import { useToast } from "../../lib/toast";
 
 export function EmbedSlot({ tagId, label, description }: { tagId: string; label: string; description: string }) {
   const [url, setUrl] = useLocalStorage<string>(`eopanel-embed-${tagId}`, "");
   const [draft, setDraft] = useState(url);
+  const { showToast } = useToast();
 
   if (url) {
     return (
@@ -18,6 +20,7 @@ export function EmbedSlot({ tagId, label, description }: { tagId: string; label:
             onClick={() => {
               setUrl("");
               setDraft("");
+              showToast(`${label} desconectado`, "info");
             }}
             className="text-xs font-medium text-ink-faint transition-colors hover:text-danger"
           >
@@ -42,7 +45,10 @@ export function EmbedSlot({ tagId, label, description }: { tagId: string; label:
         className="mt-1 flex w-full max-w-md gap-2"
         onSubmit={(e) => {
           e.preventDefault();
-          if (draft.trim()) setUrl(draft.trim());
+          if (draft.trim()) {
+            setUrl(draft.trim());
+            showToast(`${label} conectado`);
+          }
         }}
       >
         <input

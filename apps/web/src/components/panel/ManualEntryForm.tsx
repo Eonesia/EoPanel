@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { FormField } from "../../data/types";
 import { Icon } from "../ui/Icon";
 import { useLocalStorage } from "../../lib/useLocalStorage";
+import { useToast } from "../../lib/toast";
 
 type Entry = Record<string, string> & { _at: string };
 
@@ -16,12 +17,14 @@ export function ManualEntryForm({
 }) {
   const [entries, setEntries] = useLocalStorage<Entry[]>(`eopanel-form-${tagId}`, []);
   const [draft, setDraft] = useState<Record<string, string>>({});
+  const { showToast } = useToast();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (fields.some((f) => !draft[f.id]?.trim())) return;
     setEntries((prev) => [{ ...draft, _at: new Date().toISOString() } as Entry, ...prev].slice(0, 20));
     setDraft({});
+    showToast("Registro guardado");
   }
 
   return (

@@ -1,15 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../lib/auth";
+import { useNotifications } from "../../lib/notifications";
+import { usePermissions } from "../../lib/permissions";
 import { ALL_PROFILES } from "../../data/socios";
 import { Icon } from "../ui/Icon";
+import { NotificationBadge } from "../ui/NotificationBadge";
+import { CommandPalette } from "./CommandPalette";
 
 type Crumb = { label: string; to?: string };
 
 export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: () => void }) {
   const { profile, isDemo, loginDemo, logout } = useAuth();
+  const { listUnread, markTagRead } = useNotifications();
+  const { canViewTab, canViewSector } = usePermissions();
   const [open, setOpen] = useState(false);
+  const [bellOpen, setBellOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPaletteOpen((v) => !v);
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  const unread = listUnread().filter(
+    (item) => canViewTab(profile, item.tabId) && canViewSector(profile, item.tabId, item.sectorId),
+  );
+  const totalUnread = unread.reduce((sum, item) => sum + item.count, 0);
 
   return (
     <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-surface/80 px-4 py-3 backdrop-blur-md md:px-6">
@@ -39,9 +63,84 @@ export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: 
         ))}
       </nav>
 
+      <button
+        onClick={() => setPaletteOpen(true)}
+        className="btn btn-secondary hidden !gap-2 !text-xs !text-ink-faint sm:inline-flex"
+      >
+        <Icon name="ti-search" />
+        Buscar
+        <kbd className="rounded border border-border-strong bg-surface-2 px-1.5 py-0.5 font-sans text-[10px] font-semibold text-ink-faint">
+          ⌘K
+        </kbd>
+      </button>
+      <button onClick={() => setPaletteOpen(true)} className="btn btn-ghost !px-2.5 sm:hidden" aria-label="Buscar">
+        <Icon name="ti-search" />
+      </button>
+
       <div className="relative shrink-0">
         <button
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => {
+            setBellOpen((v) => !v);
+            setOpen(false);
+          }}
+          className="btn btn-ghost relative !px-2.5"
+          aria-label="Notificaciones"
+        >
+          <Icon name="ti-bell" className="text-lg" />
+          {totalUnread > 0 && (
+            <span className="absolute right-0.5 top-0.5">
+              <NotificationBadge count={totalUnread} />
+            </span>
+          )}
+        </button>
+
+        {bellOpen && (
+          <div
+            className="fade-in-up absolute right-0 top-[calc(100%+8px)] w-80 overflow-hidden rounded-2xl border border-border bg-surface shadow-pop"
+            style={{ boxShadow: "var(--shadow-pop)" }}
+          >
+            <div className="border-b border-border px-4 py-3">
+              <p className="text-sm font-semibold text-ink">Notificaciones</p>
+              <p className="text-xs text-ink-faint">{totalUnread > 0 ? `${totalUnread} sin leer` : "Todo al día"}</p>
+            </div>
+            <div className="max-h-96 overflow-y-auto">
+              {unread.length === 0 ? (
+                <p className="px-4 py-8 text-center text-sm text-ink-faint">No hay notificaciones pendientes.</p>
+              ) : (
+                unread.map((item) => (
+                  <button
+                    key={item.tagId}
+                    onClick={() => {
+                      markTagRead(item.tagId);
+                      setBellOpen(false);
+                      navigate(`/panel/${item.tabId}/${item.sectorId}/${item.tagId}`);
+                    }}
+                    className="flex w-full items-center gap-3 border-b border-border px-4 py-3 text-left transition-colors last:border-0 hover:bg-surface-2"
+                  >
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-[15px] text-brand-600">
+                      <Icon name={item.tagIcon} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-ink">{item.tagLabel}</p>
+                      <p className="truncate text-xs text-ink-faint">
+                        {item.tabLabel} · {item.sectorLabel}
+                      </p>
+                    </div>
+                    <NotificationBadge count={item.count} />
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="relative shrink-0">
+        <button
+          onClick={() => {
+            setOpen((v) => !v);
+            setBellOpen(false);
+          }}
           className="flex items-center gap-2 rounded-full border border-border bg-surface py-1 pl-1 pr-3 transition-all hover:border-brand-100 hover:shadow-[0_4px_14px_-6px_rgba(91,69,240,0.35)]"
         >
           <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-[11px] font-semibold text-white">
@@ -102,6 +201,8 @@ export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: 
           </div>
         )}
       </div>
+
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
     </header>
   );
 }

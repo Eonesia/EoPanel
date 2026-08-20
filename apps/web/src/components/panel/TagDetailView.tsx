@@ -9,10 +9,12 @@ import { EmbedSlot } from "./EmbedSlot";
 import { ManualEntryForm } from "./ManualEntryForm";
 import { IntegrationStatus } from "./IntegrationStatus";
 import { useNotifications } from "../../lib/notifications";
+import { useToast } from "../../lib/toast";
 
 export function TagDetailView({ tabId, sector, tag }: { tabId: string; sector: Sector; tag: Tag }) {
   const navigate = useNavigate();
   const { tagCount, markTagRead } = useNotifications();
+  const { showToast } = useToast();
   const count = tagCount(tag.id);
 
   return (
@@ -39,7 +41,13 @@ export function TagDetailView({ tabId, sector, tag }: { tabId: string; sector: S
           </div>
         </div>
         {count > 0 && (
-          <button onClick={() => markTagRead(tag.id)} className="btn btn-secondary shrink-0">
+          <button
+            onClick={() => {
+              markTagRead(tag.id);
+              showToast(`${tag.label} marcado como leído`);
+            }}
+            className="btn btn-secondary shrink-0"
+          >
             <Icon name="ti-check" />
             <span className="hidden sm:inline">Marcar como leído</span>
           </button>
