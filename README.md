@@ -188,6 +188,11 @@ reales que no existen en este entorno. Variables documentadas en
 - [x] Las tablas (`DataTable`, `EditableLedger`) marcan sus cabeceras con
       `scope="col"`, estándar para que un lector de pantalla anuncie la
       columna al recorrer la fila.
+- [x] Sin dependencias de CDN de terceros en tiempo de ejecución — se quitó
+      un `<link>` a la webfont de Tabler Icons en `cdnjs.cloudflare.com` que
+      quedó huérfano de cuando el proyecto migró a `@tabler/icons-react`
+      (SVG en el bundle); en una herramienta interna y confidencial, cada
+      petición a un host externo es una fuga innecesaria.
 - [ ] HTTPS en Hostinger — depende de la configuración del hosting final.
 - [ ] 2FA — Supabase lo soporta (TOTP); pendiente de activarlo en el proyecto
       real y añadir el flujo en el login cuando se decida.
