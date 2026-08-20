@@ -193,6 +193,15 @@ reales que no existen en este entorno. Variables documentadas en
       quedó huérfano de cuando el proyecto migró a `@tabler/icons-react`
       (SVG en el bundle); en una herramienta interna y confidencial, cada
       petición a un host externo es una fuga innecesaria.
+- [x] `supabase/schema.sql`: `embeds.url` tiene un `check` que exige
+      `http(s)://` a nivel de base de datos (mismo requisito que
+      `isEmbeddableUrl()` en el frontend, por si algún día se escribe ahí sin
+      pasar por esa UI); `social_metrics` gana políticas de `update`/`delete`
+      —sin ellas, borrar un registro de RRSS (función ya añadida a
+      `ManualEntryForm`) fallaría en cuanto se conectara Supabase de verdad—
+      y sus políticas ahora exigen acceso a la pestaña Métricas en vez de
+      solo estar autenticado, igual que Finanzas. Verificado aplicando el
+      script completo contra un Postgres real (no solo revisado a ojo).
 - [ ] HTTPS en Hostinger — depende de la configuración del hosting final.
 - [ ] 2FA — Supabase lo soporta (TOTP); pendiente de activarlo en el proyecto
       real y añadir el flujo en el login cuando se decida.

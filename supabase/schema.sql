@@ -207,11 +207,15 @@ create table public.social_metrics (
 
 alter table public.social_metrics enable row level security;
 
-create policy "social_metrics_select_authenticated" on public.social_metrics
-  for select using (auth.role() = 'authenticated');
-
-create policy "social_metrics_insert_authenticated" on public.social_metrics
-  for insert with check (auth.role() = 'authenticated');
+-- Igual que forecast_entries/bank_debts/invoices: gated por acceso a la pestaña
+-- (aquí "metricas"), no solo por estar autenticado — si no, alguien sin permiso
+-- de Métricas podría leer/insertar estas filas igualmente.
+-- Cubre select/insert/update/delete: ManualEntryForm ya permite borrar un
+-- registro guardado (apps/web/src/components/panel/ManualEntryForm.tsx) — sin
+-- una policy para update/delete, RLS deniega esas operaciones por defecto en
+-- cuanto esta tabla se conecte de verdad.
+create policy "social_metrics_metricas_access" on public.social_metrics
+  for all using (public.has_tab_access('metricas'));
 
 -- ============================================================
 -- Biblioteca — enlaces embebidos
@@ -222,7 +226,10 @@ create policy "social_metrics_insert_authenticated" on public.social_metrics
 
 create table public.embeds (
   tag_id text primary key,
-  url text not null,
+  -- Mismo requisito que isEmbeddableUrl() en EmbedSlot.tsx: solo http(s), nunca
+  -- javascript:/data:/etc. — el frontend ya lo valida, pero la tabla debe
+  -- rechazarlo también por si algún día se escribe aquí sin pasar por esa UI.
+  url text not null check (url ~* '^https?://'),
   connected_by uuid references auth.users (id),
   connected_at timestamptz not null default now()
 );
