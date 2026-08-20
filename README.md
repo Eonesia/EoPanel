@@ -9,7 +9,7 @@ Vista global, Producción, Métricas, Learning, Finanzas y Onboarding, cada una
 con sus sectores, páginas de tag, notificaciones agregadas y sistema de
 permisos granular por rol. Se suman una búsqueda global (⌘K), un centro de
 notificaciones, favoritos, un libro editable en Facturación ("Holded propio"),
-57 tests automatizados (45 web + 12 api) y CI en GitHub Actions. Todos los datos son de ejemplo
+68 tests automatizados (56 web + 12 api) y CI en GitHub Actions. Todos los datos son de ejemplo
 (empresa ficticia "Eonesia", activa desde junio de 2022 — ver
 `apps/web/src/data/company.ts`).
 
@@ -50,7 +50,7 @@ npm run dev:api       # http://localhost:4000 (opcional en esta fase, ver abajo)
 ### Calidad
 
 ```bash
-npm run test --workspace apps/web    # Vitest — 45 tests (notificaciones + marcar todas, permisos + excepciones por persona, búsqueda, auth, ErrorBoundary, embeds, entrada manual)
+npm run test --workspace apps/web    # Vitest — 56 tests (notificaciones + marcar todas, permisos + excepciones por persona, búsqueda, auth, ErrorBoundary, embeds, entrada manual, ledger + totales)
 npm run test --workspace apps/api    # Vitest + supertest — 12 tests (rutas, integraciones, CORS, 404)
 npm run lint --workspace apps/web    # oxlint
 npm run build                        # build de producción de web + api
@@ -120,7 +120,9 @@ esta fase los permisos se guardan en `localStorage`; el esquema
   dashboard (ver `supabase/README.md`).
 - **Facturación** (Finanzas > Facturación > Facturas): libro editable de
   verdad — añade y elimina facturas desde el panel ("Holded propio", spec §8),
-  guardado en `localStorage` hasta que se conecte la tabla `invoices`.
+  con un total en el pie de la tabla que se recalcula al vuelo (parseo de
+  importes en formato español vía `apps/web/src/lib/currency.ts`), guardado
+  en `localStorage` hasta que se conecte la tabla `invoices`.
 - **Backend Express**: `/api/health`, `/api/notifications/summary` (mock),
   `/api/auth/session` (valida un token de Supabase si está configurado) y
   `/api/integrations/*` (ver siguiente sección). El frontend **todavía no

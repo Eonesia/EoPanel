@@ -37,7 +37,13 @@ export type TagDetail = {
    * persistida localmente. `seedRows` es el histórico de ejemplo con el que arranca;
    * `fields` define las columnas editables (mismo id que la columna correspondiente).
    */
-  ledger?: { fields: FormField[]; seedRows: TableRow[]; addLabel?: string };
+  ledger?: {
+    fields: FormField[];
+    seedRows: TableRow[];
+    addLabel?: string;
+    /** Id de un campo con importes en formato español ("3.400 €") — si se indica, se muestra la suma en un pie de tabla. */
+    totalField?: string;
+  };
 };
 
 export type Tag = {

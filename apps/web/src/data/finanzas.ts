@@ -212,6 +212,7 @@ const facturacion: Sector = {
         intro: "Tu \"Holded propio\": añade y elimina facturas directamente desde aquí. Migración del histórico completo desde Excel pendiente (spec §8).",
         ledger: {
           addLabel: "Nueva factura",
+          totalField: "Importe",
           fields: [
             { id: "Nº", label: "Nº", type: "text", placeholder: "F-2026-043" },
             { id: "Cliente", label: "Cliente", type: "text", placeholder: "Colegio Alameda" },

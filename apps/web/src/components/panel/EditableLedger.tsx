@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { FormField, TableRow } from "../../data/types";
 import { Icon } from "../ui/Icon";
 import { useLocalStorage } from "../../lib/useLocalStorage";
 import { useToast } from "../../lib/toast";
+import { formatSpanishCurrency, parseSpanishCurrency } from "../../lib/currency";
 
 type Row = TableRow & { _id: string };
 
@@ -11,11 +12,13 @@ export function EditableLedger({
   fields,
   seedRows,
   addLabel = "Añadir fila",
+  totalField,
 }: {
   tagId: string;
   fields: FormField[];
   seedRows: TableRow[];
   addLabel?: string;
+  totalField?: string;
 }) {
   const seeded: Row[] = seedRows.map((r, i) => ({ ...r, _id: `seed-${i}` }));
   const [rows, setRows] = useLocalStorage<Row[]>(`eopanel-ledger-${tagId}`, seeded);
@@ -36,6 +39,11 @@ export function EditableLedger({
     setRows((prev) => prev.filter((r) => r._id !== id));
     showToast("Fila eliminada", "info");
   }
+
+  const total = useMemo(() => {
+    if (!totalField) return null;
+    return rows.reduce((sum, row) => sum + (parseSpanishCurrency(row[totalField] ?? "") ?? 0), 0);
+  }, [rows, totalField]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -118,6 +126,18 @@ export function EditableLedger({
                 </tr>
               )}
             </tbody>
+            {total !== null && rows.length > 0 && (
+              <tfoot>
+                <tr className="border-t border-border-strong bg-surface-2">
+                  {fields.map((f) => (
+                    <td key={f.id} className="px-4 py-2.5 text-sm font-semibold text-ink">
+                      {f.id === totalField ? formatSpanishCurrency(total) : f.id === fields[0].id ? "Total" : ""}
+                    </td>
+                  ))}
+                  <td />
+                </tr>
+              </tfoot>
+            )}
           </table>
         </div>
       </div>
