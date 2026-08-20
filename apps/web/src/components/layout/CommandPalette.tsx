@@ -76,8 +76,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
       });
     }
     return list;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile, canViewTab, canViewSector]);
+  }, [profile, canViewTab, canViewSector, tagCount]);
 
   const results = useMemo(() => searchAndRank(items, query, query ? 20 : 8), [items, query]);
 
