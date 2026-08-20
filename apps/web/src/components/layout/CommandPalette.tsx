@@ -81,7 +81,23 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return items.slice(0, 8);
-    return items.filter((i) => i.searchText.toLowerCase().includes(q)).slice(0, 20);
+
+    function rank(item: PaletteItem): number {
+      const label = item.label.toLowerCase();
+      if (label === q) return 0;
+      if (label.startsWith(q)) return 1;
+      if (label.includes(q)) return 2;
+      if (item.breadcrumb.toLowerCase().includes(q)) return 3;
+      if (item.searchText.toLowerCase().includes(q)) return 4;
+      return -1;
+    }
+
+    return items
+      .map((item) => ({ item, rank: rank(item) }))
+      .filter((r) => r.rank >= 0)
+      .sort((a, b) => a.rank - b.rank)
+      .slice(0, 20)
+      .map((r) => r.item);
   }, [items, query]);
 
   useEffect(() => {

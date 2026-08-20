@@ -44,6 +44,10 @@ const responsabilidades: Sector = {
   label: "Responsabilidades",
   icon: "ti-user-check",
   description: "Reparto de áreas entre los 4 socios.",
+  widgetStats: [
+    { label: "Áreas asignadas", value: "4/4", trendDirection: "flat" },
+    { label: "Última revisión", value: "jun 2026" },
+  ],
   tags: [
     tag({
       id: "reparto",
