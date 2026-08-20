@@ -66,17 +66,23 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     [counts],
   );
 
-  const markTagRead = useCallback((tagId: string) => {
-    setCounts((prev) => ({ ...prev, [tagId]: 0 }));
-  }, []);
+  const markTagRead = useCallback(
+    (tagId: string) => {
+      setCounts((prev) => ({ ...prev, [tagId]: 0 }));
+    },
+    [setCounts],
+  );
 
-  const markManyRead = useCallback((tagIds: string[]) => {
-    setCounts((prev) => {
-      const next = { ...prev };
-      for (const tagId of tagIds) next[tagId] = 0;
-      return next;
-    });
-  }, []);
+  const markManyRead = useCallback(
+    (tagIds: string[]) => {
+      setCounts((prev) => {
+        const next = { ...prev };
+        for (const tagId of tagIds) next[tagId] = 0;
+        return next;
+      });
+    },
+    [setCounts],
+  );
 
   const listUnread = useCallback((): UnreadItem[] => {
     const items: UnreadItem[] = [];
