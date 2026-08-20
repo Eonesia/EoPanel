@@ -9,7 +9,7 @@ Vista global, Producción, Métricas, Learning, Finanzas y Onboarding, cada una
 con sus sectores, páginas de tag, notificaciones agregadas y sistema de
 permisos granular por rol. Se suman una búsqueda global (⌘K), un centro de
 notificaciones, favoritos, un libro editable en Facturación ("Holded propio"),
-53 tests automatizados (41 web + 12 api) y CI en GitHub Actions. Todos los datos son de ejemplo
+56 tests automatizados (44 web + 12 api) y CI en GitHub Actions. Todos los datos son de ejemplo
 (empresa ficticia "Eonesia", activa desde junio de 2022 — ver
 `apps/web/src/data/company.ts`).
 
@@ -50,7 +50,7 @@ npm run dev:api       # http://localhost:4000 (opcional en esta fase, ver abajo)
 ### Calidad
 
 ```bash
-npm run test --workspace apps/web    # Vitest — 41 tests (notificaciones, permisos + excepciones por persona, búsqueda, auth, ErrorBoundary, embeds)
+npm run test --workspace apps/web    # Vitest — 44 tests (notificaciones, permisos + excepciones por persona, búsqueda, auth, ErrorBoundary, embeds, entrada manual)
 npm run test --workspace apps/api    # Vitest + supertest — 12 tests (rutas, integraciones, CORS, 404)
 npm run lint --workspace apps/web    # oxlint
 npm run build                        # build de producción de web + api
@@ -135,7 +135,8 @@ esta fase los permisos se guardan en `localStorage`; el esquema
   `apps/web/src/components/panel/EmbedSlot.tsx`.
 - **RRSS** (Web/LinkedIn/Instagram/Facebook/TikTok): el formulario de entrada
   manual funciona de verdad (spec §8 — "construir la vista para entrada
-  manual"), guardando cada registro en `localStorage`.
+  manual"), con validación de campos obligatorios y borrado de registros,
+  guardando cada uno en `localStorage`.
 - **Mail, Banco (open banking), LXP**: sin conectar todavía — cada tag
   muestra una tarjeta de estado ("pendiente"/"no conectado") con qué falta
   exactamente para activarlo.
