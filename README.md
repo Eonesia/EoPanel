@@ -9,7 +9,7 @@ Vista global, Producción, Métricas, Learning, Finanzas y Onboarding, cada una
 con sus sectores, páginas de tag, notificaciones agregadas y sistema de
 permisos granular por rol. Se suman una búsqueda global (⌘K), un centro de
 notificaciones, favoritos, un libro editable en Facturación ("Holded propio"),
-verificación en dos pasos (TOTP), 116 tests automatizados (101 web + 15 api) y
+verificación en dos pasos (TOTP), 124 tests automatizados (109 web + 15 api) y
 CI en GitHub Actions. Todos los datos son de ejemplo (empresa ficticia
 "Eonesia", activa desde junio de 2022 — ver `apps/web/src/data/company.ts`).
 
@@ -271,3 +271,14 @@ Paleta y tipografía son un placeholder propio (base clara, acentos
 azul/violeta futuristas) definido en `apps/web/src/index.css` vía tokens
 `@theme` de Tailwind — fácil de sustituir cuando haya identidad de marca
 definitiva de Eonesia (logo, colores exactos).
+
+**Indicador de pestaña con física de resorte** (`apps/web/src/lib/useSpring.ts`,
+usado en `Sidebar.tsx`): al cambiar de pestaña, el resaltado no salta
+instantáneamente — un "hook" de resorte real (posición + velocidad,
+integrado cada frame) anima el indicador con dos bordes independientes
+(uno se asienta más rápido que el otro), así que se estira mientras viaja
+y luego se asienta, en vez de deslizarse como un bloque rígido. Respeta
+`prefers-reduced-motion` (salta al instante sin animar). El texto/icono
+de la pestaña activa cambia de color al instante al hacer clic — solo el
+resaltado de fondo es lo que viaja con retraso, para que el clic se
+sienta inmediato y el resto sea puramente decorativo.
