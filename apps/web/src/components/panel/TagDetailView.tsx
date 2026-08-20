@@ -8,6 +8,7 @@ import { DataTable } from "../ui/DataTable";
 import { EmbedSlot } from "./EmbedSlot";
 import { ManualEntryForm } from "./ManualEntryForm";
 import { IntegrationStatus } from "./IntegrationStatus";
+import { EditableLedger } from "./EditableLedger";
 import { useNotifications } from "../../lib/notifications";
 import { useToast } from "../../lib/toast";
 import { useFavorites } from "../../lib/favorites";
@@ -84,6 +85,15 @@ export function TagDetailView({ tabId, sector, tag }: { tabId: string; sector: S
 
         {tag.detail.table && <DataTable columns={tag.detail.table.columns} rows={tag.detail.table.rows} />}
 
+        {tag.detail.ledger && (
+          <EditableLedger
+            tagId={tag.id}
+            fields={tag.detail.ledger.fields}
+            seedRows={tag.detail.ledger.seedRows}
+            addLabel={tag.detail.ledger.addLabel}
+          />
+        )}
+
         {tag.detail.integration && (
           <IntegrationStatus
             provider={tag.detail.integration.provider}
@@ -101,6 +111,7 @@ export function TagDetailView({ tabId, sector, tag }: { tabId: string; sector: S
           !tag.detail.table &&
           !tag.detail.embed &&
           !tag.detail.form &&
+          !tag.detail.ledger &&
           !tag.detail.integration && (
             <div className="surface-card flex flex-col items-center gap-2 px-6 py-12 text-center">
               <Icon name="ti-plug-connected-x" className="text-2xl text-ink-faint" />

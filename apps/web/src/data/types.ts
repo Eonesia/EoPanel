@@ -32,6 +32,12 @@ export type TagDetail = {
   form?: { fields: FormField[]; submitLabel?: string };
   /** Estado de integración con una fuente externa real (Mail, Banco, LXP…). */
   integration?: { provider: string; status: "conectado" | "pendiente" | "no_conectado"; note: string };
+  /**
+   * Libro editable (p.ej. Facturación — "Holded propio"): tabla con alta/baja de filas,
+   * persistida localmente. `seedRows` es el histórico de ejemplo con el que arranca;
+   * `fields` define las columnas editables (mismo id que la columna correspondiente).
+   */
+  ledger?: { fields: FormField[]; seedRows: TableRow[]; addLabel?: string };
 };
 
 export type Tag = {

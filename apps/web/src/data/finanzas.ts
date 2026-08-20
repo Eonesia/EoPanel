@@ -209,16 +209,23 @@ const facturacion: Sector = {
       notifications: 1,
       summary: "Facturas emitidas por categoría de gasto/ingreso.",
       detail: {
-        intro: "Histórico de facturas emitidas. Migración de años anteriores desde Excel pendiente de completar (spec §8).",
-        table: {
-          columns: ["Nº", "Cliente", "Categoría", "Importe", "Estado"],
-          rows: [
+        intro: "Tu \"Holded propio\": añade y elimina facturas directamente desde aquí. Migración del histórico completo desde Excel pendiente (spec §8).",
+        ledger: {
+          addLabel: "Nueva factura",
+          fields: [
+            { id: "Nº", label: "Nº", type: "text", placeholder: "F-2026-043" },
+            { id: "Cliente", label: "Cliente", type: "text", placeholder: "Colegio Alameda" },
+            { id: "Categoría", label: "Categoría", type: "text", placeholder: "Licencia LXP" },
+            { id: "Importe", label: "Importe", type: "text", placeholder: "3.400 €" },
+            { id: "Estado", label: "Estado", type: "text", placeholder: "Pendiente" },
+          ],
+          seedRows: [
             { "Nº": "F-2026-041", Cliente: "Colegio Alameda", Categoría: "Licencia LXP", Importe: "3.400 €", Estado: "Cobrada" },
             { "Nº": "F-2026-042", Cliente: "IES Sierra Nevada", Categoría: "Encargo VR", Importe: "2.100 €", Estado: "Pendiente" },
             { "Nº": "F-2026-040", Cliente: "Fundación Aprende+", Categoría: "Mundos360", Importe: "3.400 €", Estado: "Cobrada" },
           ],
         },
-        note: "Importar histórico: sube los Excel de contabilidad de años anteriores desde aquí cuando la función de importación esté lista (ver apps/api — pendiente).",
+        note: "Importar histórico completo desde Excel: función pendiente de construir en apps/api.",
       },
     }),
   ],
