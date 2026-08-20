@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../lib/auth";
 import { usePermissions, permissionableTabs } from "../lib/permissions";
+import { TEAM } from "../data/socios";
 import { AppShell } from "../components/layout/AppShell";
 import { Icon } from "../components/ui/Icon";
 import { Switch } from "../components/ui/Switch";
@@ -12,7 +13,8 @@ const ROLES = [
 
 export function PermissionsAdminPage() {
   const { profile } = useAuth();
-  const { state, setTabEnabled, setSectorEnabled } = usePermissions();
+  const { state, setTabEnabled, setSectorEnabled, userTabOverride, setUserTabOverride, clearUserTabOverride } =
+    usePermissions();
 
   if (profile?.role !== "socio") {
     return <Navigate to="/panel/global" replace />;
@@ -43,7 +45,7 @@ export function PermissionsAdminPage() {
 
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 {ROLES.map((role) => {
-                  const tabPerm = state[role.id]?.[tab.id];
+                  const tabPerm = state.roles[role.id]?.[tab.id];
                   const enabled = tabPerm?.enabled ?? false;
                   return (
                     <div key={role.id} className="rounded-xl border border-border bg-surface-2 p-3.5">
@@ -67,6 +69,79 @@ export function PermissionsAdminPage() {
                           ))}
                         </div>
                       )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <h2 className="mb-1 mt-8 font-display text-lg font-bold text-ink">Excepciones por persona</h2>
+        <p className="mb-4 text-sm text-ink-soft">
+          Da o quita acceso a una pestaña concreta para alguien en particular, sin tocar el valor por defecto de su
+          rol. Útil para un caso puntual (p. ej. que Marta vea Finanzas sin dar Finanzas a todo el equipo de
+          Desarrollo).
+        </p>
+
+        <div className="flex flex-col gap-4">
+          {TEAM.map((person) => (
+            <div key={person.id} className="surface-card p-5">
+              <div className="mb-4 flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-ink text-xs font-semibold text-white">
+                  {person.initials}
+                </span>
+                <div>
+                  <p className="text-sm font-semibold text-ink">{person.name}</p>
+                  <p className="text-xs text-ink-faint">{person.title}</p>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {tabs.map((tab) => {
+                  const roleDefault = state.roles[person.role as "empleado" | "becario"]?.[tab.id]?.enabled ?? false;
+                  const override = userTabOverride(person.id, tab.id);
+                  return (
+                    <div key={tab.id} className="flex items-center justify-between gap-3 rounded-lg px-2 py-1.5">
+                      <span className="flex items-center gap-2 text-sm text-ink-soft">
+                        <Icon name={tab.icon} className="text-ink-faint" />
+                        {tab.label}
+                        {override === undefined ? (
+                          <span className="text-[11px] text-ink-faint">
+                            (según rol: {roleDefault ? "sí" : "no"})
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-brand-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-600">
+                            excepción
+                          </span>
+                        )}
+                      </span>
+                      <div className="flex shrink-0 overflow-hidden rounded-lg border border-border-strong text-xs font-medium">
+                        <button
+                          onClick={() => clearUserTabOverride(person.id, tab.id)}
+                          className={`px-2.5 py-1.5 transition-colors ${
+                            override === undefined ? "bg-ink text-white" : "bg-surface text-ink-soft hover:bg-surface-2"
+                          }`}
+                        >
+                          Rol
+                        </button>
+                        <button
+                          onClick={() => setUserTabOverride(person.id, tab.id, true)}
+                          className={`border-l border-border-strong px-2.5 py-1.5 transition-colors ${
+                            override === true ? "bg-success text-white" : "bg-surface text-ink-soft hover:bg-surface-2"
+                          }`}
+                        >
+                          Sí
+                        </button>
+                        <button
+                          onClick={() => setUserTabOverride(person.id, tab.id, false)}
+                          className={`border-l border-border-strong px-2.5 py-1.5 transition-colors ${
+                            override === false ? "bg-danger text-white" : "bg-surface text-ink-soft hover:bg-surface-2"
+                          }`}
+                        >
+                          No
+                        </button>
+                      </div>
                     </div>
                   );
                 })}

@@ -9,7 +9,7 @@ Vista global, Producción, Métricas, Learning, Finanzas y Onboarding, cada una
 con sus sectores, páginas de tag, notificaciones agregadas y sistema de
 permisos granular por rol. Se suman una búsqueda global (⌘K), un centro de
 notificaciones, favoritos, un libro editable en Facturación ("Holded propio"),
-27 tests automatizados y CI en GitHub Actions. Todos los datos son de ejemplo
+41 tests automatizados y CI en GitHub Actions. Todos los datos son de ejemplo
 (empresa ficticia "Eonesia", activa desde junio de 2022 — ver
 `apps/web/src/data/company.ts`).
 
@@ -50,7 +50,7 @@ npm run dev:api       # http://localhost:4000 (opcional en esta fase, ver abajo)
 ### Calidad
 
 ```bash
-npm run test --workspace apps/web    # Vitest — 29 tests (notificaciones, permisos, búsqueda, auth, ErrorBoundary)
+npm run test --workspace apps/web    # Vitest — 36 tests (notificaciones, permisos + excepciones por persona, búsqueda, auth, ErrorBoundary)
 npm run test --workspace apps/api    # Vitest + supertest — 12 tests (rutas, integraciones, CORS, 404)
 npm run lint --workspace apps/web    # oxlint
 npm run build                        # build de producción de web + api
@@ -89,13 +89,23 @@ generar y subir `dist/` cada vez que cambien.
 
 Los 4 socios tienen acceso completo siempre. Empleados y becarios ven solo lo
 que un socio les active desde **Permisos** (enlace en el sidebar, visible
-solo para socios → `/panel/admin/permisos`), con granularidad por pestaña y
-por sector dentro de cada pestaña, tal como pide el spec §3. La aplicación
-se refuerza en tres capas: el sidebar oculta lo no permitido, la vista de
-pestaña filtra las tarjetas de sector, y la página de contenido bloquea el
-acceso directo por URL con un estado "Acceso restringido". En esta fase los
-permisos se guardan en `localStorage`; el esquema `tab_permissions` en
-`supabase/schema.sql` ya está listo para cuando se persista en servidor.
+solo para socios → `/panel/admin/permisos`), con dos niveles tal como pide el
+spec §3 ("qué ve cada rol/usuario"):
+
+1. **Por rol**: valores por defecto para todos los Empleados o todos los
+   Becarios, con granularidad por pestaña y por sector dentro de cada pestaña.
+2. **Por persona** ("Excepciones por persona" en la misma pantalla): da o
+   quita el acceso a una pestaña concreta para alguien en particular sin
+   tocar el valor por defecto de su rol — p. ej. que Marta vea Finanzas sin
+   dar Finanzas a todo Desarrollo. Un botón "Rol" quita la excepción y esa
+   persona vuelve a seguir el valor de su rol.
+
+La aplicación se refuerza en tres capas: el sidebar oculta lo no permitido,
+la vista de pestaña filtra las tarjetas de sector, y la página de contenido
+bloquea el acceso directo por URL con un estado "Acceso restringido". En
+esta fase los permisos se guardan en `localStorage`; el esquema
+`tab_permissions` en `supabase/schema.sql` ya modela ambos niveles
+(`subject_type: 'role' | 'user'`) para cuando se persista en servidor.
 
 ## Qué es real y qué es mock ahora mismo
 
