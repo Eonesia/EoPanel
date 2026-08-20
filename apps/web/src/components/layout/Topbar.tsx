@@ -13,7 +13,7 @@ type Crumb = { label: string; to?: string };
 
 export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: () => void }) {
   const { profile, isDemo, loginDemo, logout } = useAuth();
-  const { listUnread, markTagRead } = useNotifications();
+  const { listUnread, markTagRead, markManyRead } = useNotifications();
   const { canViewTab, canViewSector } = usePermissions();
   const [open, setOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
@@ -112,9 +112,19 @@ export function Topbar({ crumbs, onMenuClick }: { crumbs: Crumb[]; onMenuClick: 
             className="fade-in-up absolute right-0 top-[calc(100%+8px)] w-80 overflow-hidden rounded-2xl border border-border bg-surface shadow-pop"
             style={{ boxShadow: "var(--shadow-pop)" }}
           >
-            <div className="border-b border-border px-4 py-3">
-              <p className="text-sm font-semibold text-ink">Notificaciones</p>
-              <p className="text-xs text-ink-faint">{totalUnread > 0 ? `${totalUnread} sin leer` : "Todo al día"}</p>
+            <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+              <div>
+                <p className="text-sm font-semibold text-ink">Notificaciones</p>
+                <p className="text-xs text-ink-faint">{totalUnread > 0 ? `${totalUnread} sin leer` : "Todo al día"}</p>
+              </div>
+              {unread.length > 0 && (
+                <button
+                  onClick={() => markManyRead(unread.map((item) => item.tagId))}
+                  className="shrink-0 text-xs font-medium text-brand-600 transition-colors hover:text-brand-700"
+                >
+                  Marcar todas
+                </button>
+              )}
             </div>
             <div className="max-h-96 overflow-y-auto">
               {unread.length === 0 ? (

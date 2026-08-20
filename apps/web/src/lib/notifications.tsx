@@ -20,6 +20,8 @@ type NotificationsContextValue = {
   sectorCount: (tabId: string, sectorId: string) => number;
   tabCount: (tabId: string) => number;
   markTagRead: (tagId: string) => void;
+  /** Marca varios tags como leídos a la vez (p. ej. "marcar todas como leídas"). */
+  markManyRead: (tagIds: string[]) => void;
   listUnread: () => UnreadItem[];
 };
 
@@ -68,6 +70,14 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     setCounts((prev) => ({ ...prev, [tagId]: 0 }));
   }, []);
 
+  const markManyRead = useCallback((tagIds: string[]) => {
+    setCounts((prev) => {
+      const next = { ...prev };
+      for (const tagId of tagIds) next[tagId] = 0;
+      return next;
+    });
+  }, []);
+
   const listUnread = useCallback((): UnreadItem[] => {
     const items: UnreadItem[] = [];
     for (const tab of TABS) {
@@ -93,8 +103,8 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
   }, [counts]);
 
   const value = useMemo(
-    () => ({ tagCount, sectorCount, tabCount, markTagRead, listUnread }),
-    [tagCount, sectorCount, tabCount, markTagRead, listUnread],
+    () => ({ tagCount, sectorCount, tabCount, markTagRead, markManyRead, listUnread }),
+    [tagCount, sectorCount, tabCount, markTagRead, markManyRead, listUnread],
   );
 
   return <NotificationsContext.Provider value={value}>{children}</NotificationsContext.Provider>;

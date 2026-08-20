@@ -57,6 +57,19 @@ describe("notifications aggregation", () => {
     }
   });
 
+  it("markManyRead zeroes every tag passed in, leaving others untouched", () => {
+    const { result } = setup();
+    const unreadTags = TABS.flatMap((t) => t.sectors).flatMap((s) => s.tags).filter((t) => t.notifications > 0);
+    expect(unreadTags.length).toBeGreaterThan(1); // sanity check on the fixture data
+
+    const [untouched, ...toMark] = unreadTags;
+
+    act(() => result.current.markManyRead(toMark.map((t) => t.id)));
+
+    for (const tag of toMark) expect(result.current.tagCount(tag.id)).toBe(0);
+    expect(result.current.tagCount(untouched.id)).toBe(untouched.notifications);
+  });
+
   it("persists read state across a fresh provider mount (localStorage)", () => {
     const first = setup();
     const tag = TABS.flatMap((t) => t.sectors).flatMap((s) => s.tags).find((t) => t.notifications > 0)!;

@@ -9,7 +9,7 @@ Vista global, Producción, Métricas, Learning, Finanzas y Onboarding, cada una
 con sus sectores, páginas de tag, notificaciones agregadas y sistema de
 permisos granular por rol. Se suman una búsqueda global (⌘K), un centro de
 notificaciones, favoritos, un libro editable en Facturación ("Holded propio"),
-56 tests automatizados (44 web + 12 api) y CI en GitHub Actions. Todos los datos son de ejemplo
+57 tests automatizados (45 web + 12 api) y CI en GitHub Actions. Todos los datos son de ejemplo
 (empresa ficticia "Eonesia", activa desde junio de 2022 — ver
 `apps/web/src/data/company.ts`).
 
@@ -50,7 +50,7 @@ npm run dev:api       # http://localhost:4000 (opcional en esta fase, ver abajo)
 ### Calidad
 
 ```bash
-npm run test --workspace apps/web    # Vitest — 44 tests (notificaciones, permisos + excepciones por persona, búsqueda, auth, ErrorBoundary, embeds, entrada manual)
+npm run test --workspace apps/web    # Vitest — 45 tests (notificaciones + marcar todas, permisos + excepciones por persona, búsqueda, auth, ErrorBoundary, embeds, entrada manual)
 npm run test --workspace apps/api    # Vitest + supertest — 12 tests (rutas, integraciones, CORS, 404)
 npm run lint --workspace apps/web    # oxlint
 npm run build                        # build de producción de web + api
