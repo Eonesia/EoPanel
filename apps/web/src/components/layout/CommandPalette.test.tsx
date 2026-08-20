@@ -64,3 +64,19 @@ describe("CommandPalette notification badges", () => {
     expect(within(itemAfter).queryByText(String(tagWithCount.notifications))).not.toBeInTheDocument();
   });
 });
+
+describe("CommandPalette combobox semantics", () => {
+  it("exposes the active result via aria-activedescendant as arrow keys move the selection", async () => {
+    const user = userEvent.setup();
+    renderPalette();
+
+    const combobox = screen.getByRole("combobox");
+    const options = screen.getAllByRole("option");
+    expect(combobox).toHaveAttribute("aria-activedescendant", options[0].id);
+
+    await user.type(combobox, "{ArrowDown}");
+    expect(combobox).toHaveAttribute("aria-activedescendant", options[1].id);
+    expect(options[1]).toHaveAttribute("aria-selected", "true");
+    expect(options[0]).toHaveAttribute("aria-selected", "false");
+  });
+});

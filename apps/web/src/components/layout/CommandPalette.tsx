@@ -131,6 +131,11 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Ir a una pestaña, sector o tag…"
+            role="combobox"
+            aria-expanded={results.length > 0}
+            aria-controls="command-palette-listbox"
+            aria-activedescendant={results[activeIndex] ? `command-palette-option-${results[activeIndex].id}` : undefined}
+            aria-autocomplete="list"
             className="flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-faint"
           />
           <kbd className="rounded border border-border-strong bg-surface-2 px-1.5 py-0.5 text-[10px] font-semibold text-ink-faint">
@@ -138,13 +143,17 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
           </kbd>
         </div>
 
-        <div className="max-h-96 overflow-y-auto p-2">
+        <div id="command-palette-listbox" role="listbox" aria-label="Resultados" className="max-h-96 overflow-y-auto p-2">
           {results.length === 0 ? (
             <p className="px-3 py-8 text-center text-sm text-ink-faint">Sin resultados para "{query}".</p>
           ) : (
             results.map((item, i) => (
               <button
                 key={item.id}
+                id={`command-palette-option-${item.id}`}
+                role="option"
+                aria-selected={i === activeIndex}
+                tabIndex={-1}
                 onClick={() => go(item)}
                 onMouseEnter={() => setActiveIndex(i)}
                 className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors ${
