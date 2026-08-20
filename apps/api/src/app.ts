@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import helmet from "helmet";
 import { healthRouter } from "./routes/health";
 import { notificationsRouter } from "./routes/notifications";
 import { authRouter } from "./routes/auth";
@@ -9,6 +10,9 @@ export function createApp() {
   const app = express();
   const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:5173";
 
+  // La API solo sirve JSON y algún HTML mínimo en el callback OAuth — no hay
+  // frontend servido desde aquí, así que la CSP por defecto de helmet no rompe nada.
+  app.use(helmet());
   app.use(cors({ origin: corsOrigin, credentials: true }));
   app.use(express.json());
 

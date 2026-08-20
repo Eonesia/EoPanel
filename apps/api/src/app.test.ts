@@ -37,3 +37,12 @@ describe("CORS", () => {
     expect(res.headers["access-control-allow-origin"]).toBe("http://localhost:5173");
   });
 });
+
+describe("security headers", () => {
+  it("sets helmet's baseline headers on every response", async () => {
+    const res = await request(app).get("/api/health");
+    expect(res.headers["x-content-type-options"]).toBe("nosniff");
+    expect(res.headers["x-dns-prefetch-control"]).toBe("off");
+    expect(res.headers["x-powered-by"]).toBeUndefined();
+  });
+});
